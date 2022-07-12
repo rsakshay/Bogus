@@ -1,14 +1,21 @@
-# Minimum version of CMake required to build this project
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required( VERSION 3.9.1 ) # Latest version of CMake when this file was created.
 
-# Name of the project
-project(Bogus)
+# Use solution folders to organize projects
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# Add all the source files needed to build the executable
-add_executable(
-  Bogus WIN32
-  src/main.cpp
+# Make sure DLL and EXE targets go to the same directory.
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib) # Output directory for static lib (.LIB)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin) # Output directory for shared lib (.DLL)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin) # Output directory for executables (.EXE)
+
+project( Bogus LANGUAGES CXX )
+
+add_subdirectory( BaseApp )
+
+# Set the startup project.
+set_directory_properties( PROPERTIES 
+    VS_STARTUP_PROJECT BaseApp
 )
 
-# Set Bogus as the startup project
-set_property( DIRECTORY PROPERTY VS_STARTUP_PROJECT "Bogus" )
+# Name of the project
+project(BaseApp)
