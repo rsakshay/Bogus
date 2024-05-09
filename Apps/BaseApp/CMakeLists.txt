@@ -8,6 +8,8 @@ set( m_MainDir "${CMAKE_CURRENT_SOURCE_DIR}/../.." )
 # Use folders in IDEs.
 set_property( GLOBAL PROPERTY USE_FOLDERS ON )
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 ################################################################################
 # Supported build configurations.
 set( m_Configurations
