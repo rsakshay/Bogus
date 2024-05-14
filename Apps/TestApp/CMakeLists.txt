@@ -8,6 +8,8 @@ set( m_MainDir "${CMAKE_CURRENT_SOURCE_DIR}/../.." )
 # Use folders in IDEs.
 set_property( GLOBAL PROPERTY USE_FOLDERS ON )
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 ################################################################################
 # Supported build configurations.
 set( m_Configurations
@@ -37,10 +39,11 @@ else()
 endif()
 
 set( HEADER_FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/TestApp_App.h"
 )
 
 set( SRC_FILES
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/TestApp_App.cpp"
 )
 
 add_subdirectory( "${m_MainDir}/Bogus" "${CMAKE_CURRENT_BINARY_DIR}/Bogus" )
@@ -57,6 +60,13 @@ target_include_directories( "${m_TargetName}"
 )
 
 target_link_libraries( "${m_TargetName}"
+)
+
+target_link_libraries( "${m_TargetName}"
+	PRIVATE
+		Bogus::Core
+		Bogus::External
+		Bogus::App
 )
 
 # Set the startup project

@@ -1,27 +1,54 @@
-#include <windows.h>
+#include "App_Windows.h"
 #include <tchar.h>
 
 static TCHAR szWindowClass[] = _T( "BogusApp" );
 static TCHAR szTitle[] = _T( "BOGUS" );
 
-HINSTANCE hWndInstance;
+// ENTRY POINT
+int APIENTRY WinMain(
+    HINSTANCE hInstance,
+    HINSTANCE hPrevInstance,
+    LPSTR     lpCmdLine,
+    int       nCmdShow )
+{
+    ASR::App::g_pAppWindows->m_hInstance = hInstance;
+    ASR::App::g_pAppWindows->m_lpCmdLine = lpCmdLine;
+    ASR::App::g_pAppWindows->m_nCmdShow = nCmdShow;
 
-LRESULT CALLBACK WndProc( _In_ HWND hWnd, _In_ UINT message, _In_ WPARAM wParam, _In_ LPARAM lParam );
+    ASR::App::g_pAppWindows->ExecuteApp();
 
-int WINAPI WinMain(
-    _In_ HINSTANCE hInstance,
-    _In_opt_ HINSTANCE hPrevInstance,
-    _In_ LPSTR     lpCmdLine,
-    _In_ int       nCmdShow )
+    return 0;
+}
+
+// ------------------------------------------------------
+namespace ASR
+{
+// ------------------------------------------------------
+namespace App
+{
+AppWindows* g_pAppWindows;
+
+static LRESULT CALLBACK StaticWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
+
+// ------------------------------------------------------
+// ------------------------------------------------------
+AppWindows::AppWindows()
+{
+    g_pAppWindows = (AppWindows*) this;
+}
+
+// ------------------------------------------------------
+// ------------------------------------------------------
+void AppWindows::CreateAppWindow( CreateWindowParams const& kParams )
 {
     WNDCLASSEX wcex;
 
     wcex.cbSize = sizeof( WNDCLASSEX );
     wcex.style = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc = WndProc;
+    wcex.lpfnWndProc = StaticWndProc;
     wcex.cbClsExtra = 0;
     wcex.cbWndExtra = 0;
-    wcex.hInstance = hInstance;
+    wcex.hInstance = m_hInstance;
     wcex.hIcon = LoadIcon( wcex.hInstance, IDI_APPLICATION );
     wcex.hCursor = LoadCursor( NULL, IDC_ARROW );
     wcex.hbrBackground = (HBRUSH) ( COLOR_WINDOW + 1 );
@@ -32,12 +59,10 @@ int WINAPI WinMain(
     if( !RegisterClassEx( &wcex ) )
     {
         MessageBox( NULL, _T( "Failed to register WNDCLASS" ), _T( "Bogus App window" ), NULL );
-        return 1;
+        return;
     }
 
-    hWndInstance = hInstance;
-
-    HWND hWnd = CreateWindowEx(
+    m_hWnd = CreateWindowEx(
         WS_EX_OVERLAPPEDWINDOW,
         szWindowClass,
         szTitle,
@@ -48,35 +73,38 @@ int WINAPI WinMain(
         1080,
         NULL,
         NULL,
-        hInstance,
+        m_hInstance,
         NULL
     );
 
-    if( !hWnd )
+    if( !m_hWnd )
     {
         MessageBox( NULL, _T( "Failed to create window" ), _T( "Bogus App window" ), NULL );
-        return 1;
+        return;
     }
 
-    ShowWindow( hWnd, nCmdShow );
-    UpdateWindow( hWnd );
+    ShowWindow( m_hWnd, m_nCmdShow );
+    UpdateWindow( m_hWnd );
+}
 
+// ------------------------------------------------------
+// ------------------------------------------------------
+void AppWindows::ProcessOSMessages()
+{
     MSG msg;
-    while( GetMessage( &msg, hWnd, 0, 0 ) )
+    while( PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) )
     {
         TranslateMessage( &msg );
         DispatchMessage( &msg );
     }
-
-    return (int) msg.wParam;
 }
 
 
-LRESULT CALLBACK WndProc(
-    _In_ HWND   hWnd,
-    _In_ UINT   message,
-    _In_ WPARAM wParam,
-    _In_ LPARAM lParam )
+static LRESULT CALLBACK StaticWndProc(
+    HWND   hWnd,
+    UINT   message,
+    WPARAM wParam,
+    LPARAM lParam )
 {
     switch( message )
     {
@@ -107,4 +135,8 @@ LRESULT CALLBACK WndProc(
     }
 
     return 0;
+
 }
+
+} // end namespace App
+} // end namespace ASR
