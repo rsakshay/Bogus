@@ -55,6 +55,9 @@ struct Vector
     ELEMTYPE&       operator[]( uint32 const uiIndex )     { assert( uiIndex < m_uiSize ); return m_pData[ uiIndex ]; }
     ELEMTYPE const& operator[](uint32 const uiIndex) const { assert( uiIndex < m_uiSize ); return m_pData[ uiIndex ]; }
 
+    ELEMTYPE const& front() const { return m_pData[ 0 ]; }
+    ELEMTYPE const& back() const  { return m_pData[ m_uiSize - 1 ]; }
+
     uint32 const size()     const { return m_uiSize;     }
     uint32 const capacity() const { return m_uiCapacity; }
 
@@ -70,7 +73,7 @@ struct Vector
     void push_back( ELEMTYPE const& in_Element )
     {
         ELEMTYPE* pNewElement = push_back_new();
-        memcpy( pNewElement , &in_Element, sizeof( ELEMTYPE ) );
+        *pNewElement = in_Element;
     }
 
     void resize( uint32 const uiSize )
@@ -139,8 +142,8 @@ private:
 template<typename tKey, typename tElement>
 struct VectorMapPair
 {
-    typedef tKey     KEY;
-    typedef tElement ELEMENT;
+    using KEY     = tKey;     
+    using ELEMENT = tElement;
 
     VectorMapPair() {}
     VectorMapPair( KEY const& key, ELEMENT const& element )
@@ -159,12 +162,13 @@ struct VectorMapPair
 template<typename tPairVector>
 struct VectorMap
 {
-    typedef tPairVector                     VEC;
-    typedef typename VEC::ELEMTYPE          PAIR;
-    typedef typename VEC::ELEMTYPE::KEY     KEY;
-    typedef typename VEC::ELEMTYPE::ELEMENT ELEMTYPE;
-    typedef typename VEC::iterator          iterator;
+    using VEC      = tPairVector;
+    using PAIR     = typename VEC::ELEMTYPE;
+    using KEY      = typename VEC::ELEMTYPE::KEY;
+    using ELEMTYPE = typename VEC::ELEMTYPE::ELEMENT;
+    using iterator = typename VEC::iterator;
 
+    static constexpr PAIR* s_InvalidEntry = nullptr;
     enum { eInvalidIndex = max_uint32 };
 
     uint32 add( KEY const& Key, ELEMTYPE const& Element, uint32* pExists = 0 )
@@ -183,6 +187,39 @@ struct VectorMap
 
         m_Vec.push_back( Pair );
         return m_Vec.size() - 1;
+    }
+
+    PAIR& add( PAIR const& Pair, uint32* pExists = 0 )
+    {
+        PAIR* pPair = find( Pair.m_Key );
+        if( pPair == s_InvalidEntry )
+        {
+            m_Vec.push_back( Pair );
+            pPair = &m_Vec.back();
+        }
+        else
+        {
+            if( pExists )
+                *pExists = 1;
+        }
+
+        return *pPair;
+    }
+
+    PAIR* find( KEY const& key ) const
+    {
+        for( uint32 i = 0; i < m_Vec.size(); ++i  )
+        {
+            PAIR const& Pair = m_Vec[ i ];
+            if( Pair.m_Key == key )
+                return &Pair;
+        }
+        return s_InvalidEntry;
+    }
+
+    PAIR const* find( KEY const& key ) const
+    {
+        return find( key );
     }
 
     uint32 find( KEY const& key ) const

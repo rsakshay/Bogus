@@ -13,6 +13,14 @@ namespace Core
 namespace String
 {
 
+
+// -----------------------------------------------------------------------
+template<uint32 t_uiStrLen>
+uint32 CalcHash( char const ( &szString )[ t_uiStrLen ] )
+{
+	return Hash32( szString, t_uiStrLen );
+}
+
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
 template<uint32 t_uiCapacity>
@@ -53,7 +61,11 @@ public:
 
 	Buffer& operator=( Buffer&& rhs ) = default;
 
-	char const* c_str() { return m_pData; }
+	char const* c_str() 
+	{ 
+		assert( m_pData[ m_uiLen ] == 0 );
+		return m_pData; 
+	}
 
 	void Terminate()
 	{
