@@ -3,8 +3,6 @@ cmake_minimum_required( VERSION 3.20 ) # Latest version of CMake when this file 
 set( m_TargetName "TestApp" )
 string( REGEX MATCH "[^/]*$" m_BuildDir "${CMAKE_BINARY_DIR}" )
 
-set( m_MainDir "${CMAKE_CURRENT_SOURCE_DIR}/../.." )
-
 # Use folders in IDEs.
 set_property( GLOBAL PROPERTY USE_FOLDERS ON )
 
@@ -45,8 +43,6 @@ set( HEADER_FILES
 set( SRC_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/src/TestApp_App.cpp"
 )
-
-add_subdirectory( "${m_MainDir}/Bogus" "${CMAKE_CURRENT_BINARY_DIR}/Bogus" )
 
 add_executable( "${m_TargetName}" WIN32
     ${HEADER_FILES} 

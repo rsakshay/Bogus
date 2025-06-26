@@ -189,38 +189,33 @@ struct VectorMap
         return m_Vec.size() - 1;
     }
 
-    PAIR& add( PAIR const& Pair, uint32* pExists = 0 )
-    {
-        PAIR* pPair = find( Pair.m_Key );
-        if( pPair == s_InvalidEntry )
-        {
-            m_Vec.push_back( Pair );
-            pPair = &m_Vec.back();
-        }
-        else
-        {
-            if( pExists )
-                *pExists = 1;
-        }
+    //PAIR& add( PAIR const& Pair, uint32* pExists = 0 )
+    //{
+    //    PAIR* pPair = find( Pair.m_Key );
+    //    if( pPair == s_InvalidEntry )
+    //    {
+    //        m_Vec.push_back( Pair );
+    //        pPair = &m_Vec.back();
+    //    }
+    //    else
+    //    {
+    //        if( pExists )
+    //            *pExists = 1;
+    //    }
 
-        return *pPair;
-    }
+    //    return *pPair;
+    //}
 
-    PAIR* find( KEY const& key ) const
-    {
-        for( uint32 i = 0; i < m_Vec.size(); ++i  )
-        {
-            PAIR const& Pair = m_Vec[ i ];
-            if( Pair.m_Key == key )
-                return &Pair;
-        }
-        return s_InvalidEntry;
-    }
-
-    PAIR const* find( KEY const& key ) const
-    {
-        return find( key );
-    }
+    //PAIR const* find( KEY const& key ) const
+    //{
+    //    for( uint32 i = 0; i < m_Vec.size(); ++i  )
+    //    {
+    //        PAIR const& Pair = m_Vec[ i ];
+    //        if( Pair.m_Key == key )
+    //            return &Pair;
+    //    }
+    //    return s_InvalidEntry;
+    //}
 
     uint32 find( KEY const& key ) const
     {

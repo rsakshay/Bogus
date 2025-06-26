@@ -1,7 +1,7 @@
 #ifndef CORE_UTILITY_H
 #define CORE_UTILITY_H
 #include "Globals.h"
-#include "../SMHasher/MurmurHash3.h"
+#include "MurmurHash3.h"
 
 namespace ASR
 {

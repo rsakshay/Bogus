@@ -1,0 +1,152 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "Linux",
+            "hidden": true,
+            "generator": "Ninja",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++"
+            }
+        },
+        {
+            "name": "Windows",
+            "hidden": true,
+            "generator": "Ninja",
+            "cacheVariables": {
+            }
+        },
+
+        {
+            "name": "BaseApp_Base",
+            "hidden": true,
+            "cacheVariables": {
+                "BUILD_BASEAPP": "ON",
+                "BUILD_TESTAPP": "OFF"
+            }
+        },
+        {
+            "name": "BaseApp_Debug",
+            "hidden": true,
+            "inherits": "BaseApp_Base",
+            "binaryDir": "build/BaseApp_Debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "BaseApp_Release",
+            "hidden": true,
+            "inherits": "BaseApp_Base",
+            "binaryDir": "build/BaseApp_Release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "BaseApp_Debug_Linux",
+            "hidden": false,
+            "inherits":["Linux", "BaseApp_Debug"]
+        },
+        {
+            "name": "BaseApp_Release_Linux",
+            "hidden": false,
+            "inherits":["Linux", "BaseApp_Release"]
+        },
+        {
+            "name": "BaseApp_Debug_Windows",
+            "hidden": false,
+            "inherits":["Windows", "BaseApp_Debug"]
+        },
+        {
+            "name": "BaseApp_Release_Windows",
+            "hidden": false,
+            "inherits":["Windows", "BaseApp_Release"]
+        },
+
+        {
+            "name": "TestApp_Base",
+            "hidden": true,
+            "cacheVariables": {
+                "BUILD_BASEAPP": "OFF",
+                "BUILD_TESTAPP": "ON"
+            }
+        },
+        {
+            "name": "TestApp_Debug",
+            "hidden": true,
+            "inherits": "TestApp_Base",
+            "binaryDir": "build/TestApp_Debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "TestApp_Release",
+            "hidden": true,
+            "inherits": "TestApp_Base",
+            "binaryDir": "build/TestApp_Release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+
+        {
+            "name": "TestApp_Debug_Linux",
+            "hidden": false,
+            "inherits":["Linux", "TestApp_Debug"]
+        },
+        {
+            "name": "TestApp_Release_Linux",
+            "hidden": false,
+            "inherits":["Linux", "TestApp_Release"]
+        },
+
+        {
+            "name": "TestApp_Debug_Windows",
+            "hidden": false,
+            "inherits":["Windows", "TestApp_Debug"]
+        },
+        {
+            "name": "TestApp_Release_Windows",
+            "hidden": false,
+            "inherits":["Windows", "TestApp_Release"]
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "BaseApp_Debug_Linux",
+            "configurePreset": "BaseApp_Debug_Linux"
+        },
+        {
+            "name": "BaseApp_Release_Linux",
+            "configurePreset": "BaseApp_Release_Linux"
+        },
+        {
+            "name": "BaseApp_Debug_Windows",
+            "configurePreset": "BaseApp_Debug_Windows"
+        },
+        {
+            "name": "BaseApp_Release_Windows",
+            "configurePreset": "BaseApp_Release_Windows"
+        },
+
+        {
+            "name": "TestApp_Debug_Linux",
+            "configurePreset": "TestApp_Debug_Linux"
+        },
+        {
+            "name": "TestApp_Release_Linux",
+            "configurePreset": "TestApp_Release_Linux"
+        },
+        {
+            "name": "TestApp_Debug_Windows",
+            "configurePreset": "TestApp_Debug_Windows"
+        },
+        {
+            "name": "TestApp_Release_Windows",
+            "configurePreset": "TestApp_Release_Windows"
+        }
+    ]
+}

@@ -1,5 +1,6 @@
 #ifndef CORE_STRING_H
 #define CORE_STRING_H
+#include "Core_Utility.h"
 #include "Globals.h"
 #include "assert.h"
 
@@ -18,7 +19,7 @@ namespace String
 template<uint32 t_uiStrLen>
 uint32 CalcHash( char const ( &szString )[ t_uiStrLen ] )
 {
-	return Hash32( szString, t_uiStrLen );
+	return ASR::Core::Hash32( szString, t_uiStrLen );
 }
 
 // -----------------------------------------------------------------------

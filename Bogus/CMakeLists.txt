@@ -3,8 +3,8 @@ cmake_minimum_required( VERSION 3.20 ) # Latest version of CMake when this file 
 project( "Bogus" )
 
 set( m_BogusLibraries
-    "${CMAKE_CURRENT_SOURCE_DIR}/Core"
     "${CMAKE_CURRENT_SOURCE_DIR}/External"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Core"
     "${CMAKE_CURRENT_SOURCE_DIR}/App"
 )
 
