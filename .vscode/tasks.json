@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build BaseApp_Debug_Linux",
+      "type": "shell",
+      "command": "cmake --build --preset BaseApp_Debug_Linux",
+      "group": "build",
+      "problemMatcher": "$gcc"
+    },
+    {
+      "label": "build BaseApp_Debug_Windows",
+      "type": "shell",
+      "command": "cmake --build --preset BaseApp_Debug_Windows",
+      "group": "build",
+      "problemMatcher": "$msCompile"
+    },
+  ]
+}

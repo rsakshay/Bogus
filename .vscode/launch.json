@@ -1,0 +1,40 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    // --- Linux Debug: BaseApp ---
+    {
+      "name": "Debug BaseApp (Linux)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/BaseApp_Debug/Apps/BaseApp/BaseApp",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "MIMode": "gdb",
+      "miDebuggerPath": "/usr/bin/gdb",
+      //"preLaunchTask": "build BaseApp_Debug_Linux",
+      "setupCommands": [
+        {
+          "text": "-enable-pretty-printing",
+          "description": "Enable GDB pretty printing",
+          "ignoreFailures": true
+        }
+      ]
+    },
+
+    // --- Windows Debug: BaseApp ---
+    {
+      "name": "Debug BaseApp (Windows)",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}\\build\\BaseApp_Debug\\Apps\\BaseApp\\BaseApp.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "console": "integratedTerminal"
+      //"preLaunchTask": "build BaseApp_Debug_Windows"
+    }
+  ]
+}
