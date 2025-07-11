@@ -1,0 +1,9 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+UseTab: Never              # Use spaces instead of tabs
+TabWidth: 4
+BreakBeforeBraces: Allman  # Move braces to new lines
+AllowShortFunctionsOnASingleLine: Inline
+ColumnLimit: 100
+SpaceBeforeParens: Never
+SpacesInParentheses: true

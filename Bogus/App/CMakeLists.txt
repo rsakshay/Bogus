@@ -5,13 +5,17 @@ project( "${m_TargetName}" LANGUAGES CXX )
 
 set( HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/inc/App.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/inc/App_Windows.h"
 )
+if(WIN32)
+    list(APPEND HEADER_FILES "${CMAKE_CURRENT_SOURCE_DIR}/inc/App_Windows.h")
+endif()
 
 set( SRC_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/src/App.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/App_Windows.cpp"
 )
+if(WIN32)
+    list(APPEND SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/App_Windows.cpp")
+endif()
 
 add_library( "${m_TargetName}"
     STATIC

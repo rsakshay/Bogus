@@ -1,7 +1,7 @@
-#include <iostream>
 #include "Core_String.h"
-#include "Core_Vector.h"
 #include "Core_Utility.h"
+#include "Core_Vector.h"
+#include <iostream>
 
 int main()
 {
@@ -17,7 +17,7 @@ int main()
     myVec.push_back( 69 );
     myVec.push_back( 420 );
     myVec.reserve( 20 );
-    //myVec[ 1 ] = 420;
+    // myVec[ 1 ] = 420;
 
     std::cout << "\n";
 
@@ -27,17 +27,17 @@ int main()
     for( uint32 uiItem : myVec )
         printf( "\n[%u]: %u", uiIndex++, uiItem );
 
-    using Uint32MapPair       = ASR::Core::VectorMapPair<uint32, uint32>;
+    using Uint32MapPair = ASR::Core::VectorMapPair<uint32, uint32>;
     using Uint32MapPairVector = ASR::Core::Vector<Uint32MapPair>;
-    using Uint32Map           = ASR::Core::VectorMap<Uint32MapPairVector>;
+    using Uint32Map = ASR::Core::VectorMap<Uint32MapPairVector>;
 
     Uint32Map myMap;
-    myMap.add( 0, 69   );
-    myMap.add( 1, 420  );
-    myMap.add( 2, 911  );
+    myMap.add( 0, 69 );
+    myMap.add( 1, 420 );
+    myMap.add( 2, 911 );
     myMap.add( ASR::Core::String::CalcHash( "Key1" ), 1234 );
 
-    for( Uint32MapPair const& Pair : myMap )
+    for( Uint32MapPair const &Pair : myMap )
     {
         printf( "\n[%u]: %u", Pair.m_Key, Pair.m_Element );
     }
