@@ -4,6 +4,7 @@ set( m_TargetName "Core" )
 project( "${m_TargetName}" LANGUAGES CXX )
 
 set( HEADER_FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/inc/Core_Arena.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/inc/Core_String.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/inc/Core_Vector.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/inc/Core_Utility.h"
@@ -11,6 +12,7 @@ set( HEADER_FILES
 )
 
 set( SRC_FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/Core_Arena.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/Core_String.cpp"
 )
 

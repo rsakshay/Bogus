@@ -7,3 +7,4 @@ AllowShortFunctionsOnASingleLine: Inline
 ColumnLimit: 100
 SpaceBeforeParens: Never
 SpacesInParentheses: true
+PointerAlignment: Left
