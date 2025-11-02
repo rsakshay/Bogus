@@ -27,6 +27,7 @@ add_library( "Bogus::${m_TargetName}" ALIAS "${m_TargetName}" )
 target_include_directories( "${m_TargetName}"
     PUBLIC 
         "${CMAKE_CURRENT_SOURCE_DIR}/inc"
+    PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/src"
 )
 

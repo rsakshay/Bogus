@@ -7,8 +7,6 @@ namespace ASR
 {
 namespace Core
 {
-namespace Arena
-{
 
 // ------------------------------------------------------
 // ------------------------------------------------------
@@ -16,6 +14,7 @@ Arena ArenaAlloc( uint64 uiCapacity )
 {
     Arena arena;
     arena.pMemory = (uint8*)malloc( uiCapacity );
+    arena.uiSize = uiCapacity;
     return arena;
 }
 
@@ -23,7 +22,8 @@ Arena ArenaAlloc( uint64 uiCapacity )
 // ------------------------------------------------------
 void ArenaRelease( Arena* pArena )
 {
-    free( pArena );
+    free( pArena->pMemory );
+    memset( pArena, 0, sizeof( Arena ) );
 }
 
 // ------------------------------------------------------
@@ -90,6 +90,5 @@ void ArenaClear( Arena* pArena )
     pArena->uiPos = 0;
 }
 
-} // namespace Arena
 } // namespace Core
 } // namespace ASR

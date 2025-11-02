@@ -67,3 +67,10 @@ if [[ -f "$BUILD_DIR/compile_commands.json" ]]; then
 else
   echo "⚠️  No compile_commands.json found in $BUILD_DIR"
 fi
+
+# create/update the project-local .clangd file
+rm -f .clangd
+cat > .clangd <<EOF
+CompileFlags:
+  CompilationDatabase: $BUILD_DIR
+EOF

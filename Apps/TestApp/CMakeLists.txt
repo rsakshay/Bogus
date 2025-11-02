@@ -23,8 +23,14 @@ endif()
  
 
 # THIS ONE LINE defines the authoritative version number for the Indus app (and its settings files).
+if(WIN32)
 project( "${m_TargetName} ${m_BuildDir}"
          LANGUAGES C CXX RC )
+else()
+project( "${m_TargetName} ${m_BuildDir}"
+         LANGUAGES C CXX )
+endif()
+
 
 
 message( STATUS "Build Type [${BuildType}]." )

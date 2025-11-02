@@ -6,13 +6,11 @@ namespace ASR
 {
 namespace Core
 {
-namespace Arena
-{
 // ------------------------------------------------------
 struct Arena
 {
-    uint64 uiSize;
-    uint64 uiPos;
+    uint64 uiSize = 0;
+    uint64 uiPos = 0;
     uint8* pMemory;
     uint8* pAllocated; // unused
     uint8* pCommitted; // unused
@@ -34,15 +32,14 @@ void ArenaClear( Arena* pArena );
 
 template <typename T> T* ArenaPushArray( Arena* pArena, uint32 uiCount )
 {
-    return ArenaPush( pArena, sizeof( T ) * uiCount );
+    return reinterpret_cast<uint32*>( ArenaPush( pArena, sizeof( T ) * uiCount ) );
 }
 
 template <typename T> T* ArenaPushArrayNoZero( Arena* pArena, uint32 uiCount )
 {
-    return ArenaPushNoZero( pArena, sizeof( T ) * uiCount );
+    return reinterpret_cast<uint32*>( ArenaPushNoZero( pArena, sizeof( T ) * uiCount ) );
 }
 
-} // namespace Arena
 } // namespace Core
 } // namespace ASR
 #endif
