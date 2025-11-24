@@ -10,9 +10,8 @@ Application* g_pApp;
 // ------------------------------------------------------
 Application::Application()
 {
-    g_pApp = (Application*) this;
+    g_pApp = (Application*)this;
 }
-
 
 // ------------------------------------------------------
 // ------------------------------------------------------
@@ -22,5 +21,11 @@ void Application::Inititalize( InitAppParams const& kParams )
     CreateAppWindow( kParams.windowParams );
 }
 
+// ------------------------------------------------------
+// ------------------------------------------------------
+void Application::Terminate()
+{
+    DestroyAppWindow();
 }
-}
+} // namespace App
+} // namespace ASR

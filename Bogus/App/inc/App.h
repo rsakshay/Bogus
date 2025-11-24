@@ -24,16 +24,18 @@ enum class State
 // ------------------------------------------------------
 class Application
 {
-public:
+  public:
     Application();
-    void Inititalize(InitAppParams const& kParams);
+    void Inititalize( InitAppParams const& kParams );
+    void Terminate();
     virtual void CreateAppWindow( CreateWindowParams const& kParams ) = 0;
+    virtual void DestroyAppWindow() = 0;
     virtual void ExecuteApp() = 0;
     virtual void ProcessOSMessages() = 0;
     State m_State = State::Starting;
 };
 
 extern Application* g_pApp;
-}
-}
+} // namespace App
+} // namespace ASR
 #endif

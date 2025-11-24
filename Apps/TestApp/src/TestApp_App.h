@@ -11,11 +11,12 @@ namespace TestApp
 // ------------------------------------------------------
 class TestAppApp : ASR::App::AppWindows
 {
-public:
+  public:
     void ExecuteApp() override;
+    void DestroyAppWindow() override;
 
-private:
-    ASR::App::State Run();
+  private:
+    void Run();
 };
 
 } // end namespace TestApp

@@ -6,6 +6,7 @@ set( m_BogusLibraries
     "${CMAKE_CURRENT_SOURCE_DIR}/External"
     "${CMAKE_CURRENT_SOURCE_DIR}/Core"
     "${CMAKE_CURRENT_SOURCE_DIR}/App"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Renderer"
 )
 
 ################################################################################
