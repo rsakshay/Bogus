@@ -13,11 +13,12 @@ namespace App
 // ------------------------------------------------------
 class AppWindows : public Application
 {
-public:
+  public:
     AppWindows();
     virtual ~AppWindows() {};
 
     virtual void CreateAppWindow( CreateWindowParams const& kParams ) override;
+    virtual void DestroyAppWindow() override;
     virtual void ProcessOSMessages() override;
 
     HWND m_hWnd;
@@ -27,6 +28,6 @@ public:
 };
 
 extern AppWindows* g_pAppWindows;
-} // end namespace Core
+} // namespace App
 } // end namespace ASR
 #endif

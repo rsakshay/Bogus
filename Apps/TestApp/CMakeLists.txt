@@ -20,7 +20,7 @@ set_property( CACHE BuildType PROPERTY STRINGS ${m_Configurations} )
 if( NOT BuildType IN_LIST m_Configurations )
     message( FATAL_ERROR "Invalid BuildType [${BuildType}]. Valid options are: ${m_Configurations}" )
 endif()
- 
+
 
 # THIS ONE LINE defines the authoritative version number for the Indus app (and its settings files).
 project( "${m_TargetName} ${m_BuildDir}"
@@ -45,12 +45,12 @@ set( SRC_FILES
 )
 
 add_executable( "${m_TargetName}" WIN32
-    ${HEADER_FILES} 
+    ${HEADER_FILES}
     ${SRC_FILES}
 )
 
 target_include_directories( "${m_TargetName}"
-    PRIVATE 
+    PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/inc"
         "${CMAKE_CURRENT_SOURCE_DIR}/src"
 )
@@ -59,10 +59,11 @@ target_link_libraries( "${m_TargetName}"
 )
 
 target_link_libraries( "${m_TargetName}"
-	PRIVATE
-		Bogus::Core
-		Bogus::External
-		Bogus::App
+ PRIVATE
+  Bogus::App
+  Bogus::Core
+  Bogus::External
+        Bogus::Renderer
 )
 
 # Set the startup project

@@ -1,15 +1,12 @@
 #include "App_Windows.h"
 #include <tchar.h>
+#include <winuser.h>
 
 static TCHAR szWindowClass[] = _T( "BogusApp" );
 static TCHAR szTitle[] = _T( "BOGUS" );
 
 // ENTRY POINT
-int APIENTRY WinMain(
-    HINSTANCE hInstance,
-    HINSTANCE hPrevInstance,
-    LPSTR     lpCmdLine,
-    int       nCmdShow )
+int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )
 {
     ASR::App::g_pAppWindows->m_hInstance = hInstance;
     ASR::App::g_pAppWindows->m_lpCmdLine = lpCmdLine;
@@ -34,7 +31,7 @@ static LRESULT CALLBACK StaticWndProc( HWND hWnd, UINT message, WPARAM wParam, L
 // ------------------------------------------------------
 AppWindows::AppWindows()
 {
-    g_pAppWindows = (AppWindows*) this;
+    g_pAppWindows = (AppWindows*)this;
 }
 
 // ------------------------------------------------------
@@ -51,7 +48,7 @@ void AppWindows::CreateAppWindow( CreateWindowParams const& kParams )
     wcex.hInstance = m_hInstance;
     wcex.hIcon = LoadIcon( wcex.hInstance, IDI_APPLICATION );
     wcex.hCursor = LoadCursor( NULL, IDC_ARROW );
-    wcex.hbrBackground = (HBRUSH) ( COLOR_WINDOW + 1 );
+    wcex.hbrBackground = (HBRUSH)( COLOR_WINDOW + 1 );
     wcex.lpszMenuName = NULL;
     wcex.lpszClassName = szWindowClass;
     wcex.hIconSm = LoadIcon( wcex.hInstance, IDI_APPLICATION );
@@ -63,19 +60,9 @@ void AppWindows::CreateAppWindow( CreateWindowParams const& kParams )
     }
 
     m_hWnd = CreateWindowEx(
-        WS_EX_OVERLAPPEDWINDOW,
-        szWindowClass,
-        szTitle,
+        WS_EX_OVERLAPPEDWINDOW, szWindowClass, szTitle,
         ( WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX ),
-        CW_USEDEFAULT,
-        CW_USEDEFAULT,
-        1920,
-        1080,
-        NULL,
-        NULL,
-        m_hInstance,
-        NULL
-    );
+        CW_USEDEFAULT, CW_USEDEFAULT, 1920, 1080, NULL, NULL, m_hInstance, NULL );
 
     if( !m_hWnd )
     {
@@ -85,6 +72,13 @@ void AppWindows::CreateAppWindow( CreateWindowParams const& kParams )
 
     ShowWindow( m_hWnd, m_nCmdShow );
     UpdateWindow( m_hWnd );
+}
+
+// ------------------------------------------------------
+// ------------------------------------------------------
+void AppWindows::DestroyAppWindow()
+{
+    DestroyWindow( m_hWnd );
 }
 
 // ------------------------------------------------------
@@ -99,12 +93,7 @@ void AppWindows::ProcessOSMessages()
     }
 }
 
-
-static LRESULT CALLBACK StaticWndProc(
-    HWND   hWnd,
-    UINT   message,
-    WPARAM wParam,
-    LPARAM lParam )
+static LRESULT CALLBACK StaticWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     switch( message )
     {
@@ -112,17 +101,25 @@ static LRESULT CALLBACK StaticWndProc(
     {
         PAINTSTRUCT ps;
         HDC hdc;
-        TCHAR greeting[] = _T( "Hi! I am bogus." );
+        TCHAR greeting[] = _T( "Hi! I am bogus. Testing clean exit" );
 
         hdc = BeginPaint( hWnd, &ps );
         TextOut( hdc, 5, 5, greeting, _tcslen( greeting ) );
         EndPaint( hWnd, &ps );
-    } break;
+    }
+    break;
 
     case WM_DESTROY:
     {
         PostQuitMessage( 0 );
-    } break;
+    }
+    break;
+
+    case WM_CLOSE:
+    {
+        g_pAppWindows->DestroyAppWindow();
+    }
+    break;
 
     case WM_CREATE:
     {
@@ -131,11 +128,11 @@ static LRESULT CALLBACK StaticWndProc(
     default:
     {
         return DefWindowProc( hWnd, message, wParam, lParam );
-    } break;
+    }
+    break;
     }
 
     return 0;
-
 }
 
 } // end namespace App

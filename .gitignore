@@ -388,6 +388,7 @@ FodyWeavers.xsd
 .idea/
 *.sln.iml
 
+.clangd
 
 # CMake specific
 CMakeLists.txt.user

@@ -1,4 +1,5 @@
 #include "TestApp_App.h"
+#include "App_Windows.h"
 
 namespace ASR
 {
@@ -10,22 +11,31 @@ TestAppApp g_TestApp;
 // ------------------------------------------------------
 void TestAppApp::ExecuteApp()
 {
-    //Note(asr): Add check here to make sure we don't execute more than once
+    // Note(asr): Add check here to make sure we don't execute more than once
 
     ASR::App::InitAppParams params;
     Inititalize( params );
 
     while( m_State != App::State::Exiting )
-        m_State = Run();
+        Run();
+
+    Terminate();
 }
 
 // ------------------------------------------------------
 // ------------------------------------------------------
-ASR::App::State TestAppApp::Run()
+void TestAppApp::Run()
 {
     ProcessOSMessages();
-    return ASR::App::State::Running;
 }
 
-} // end namespace TestApp 
+// ------------------------------------------------------
+// ------------------------------------------------------
+void TestAppApp::DestroyAppWindow()
+{
+    App::AppWindows::DestroyAppWindow();
+    m_State = App::State::Exiting;
+}
+
+} // end namespace TestApp
 } // end namespace ASR
