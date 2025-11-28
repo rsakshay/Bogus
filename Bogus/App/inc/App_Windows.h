@@ -5,7 +5,7 @@
 
 #include <windows.h>
 
-namespace ASR
+namespace Bogus
 {
 namespace App
 {
@@ -21,6 +21,8 @@ class AppWindows : public Application
     virtual void DestroyAppWindow() override;
     virtual void ProcessOSMessages() override;
 
+    void HandleResize( uint32 uiWidth, uint32 uiHeight );
+
     HWND m_hWnd;
     uint32 m_uiClientWidth = 1920;
     uint32 m_uiClientHeight = 1080;
@@ -31,5 +33,5 @@ class AppWindows : public Application
 
 extern AppWindows* g_pAppWindows;
 } // namespace App
-} // end namespace ASR
+} // namespace Bogus
 #endif

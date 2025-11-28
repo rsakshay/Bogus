@@ -13,10 +13,10 @@ void TestAppApp::ExecuteApp()
 {
     // Note(asr): Add check here to make sure we don't execute more than once
 
-    ASR::App::InitAppParams params;
+    Bogus::App::InitAppParams params;
     Inititalize( params );
 
-    while( m_State != App::State::Exiting )
+    while( m_State != Bogus::App::State::Exiting )
         Run();
 
     Terminate();
@@ -33,8 +33,8 @@ void TestAppApp::Run()
 // ------------------------------------------------------
 void TestAppApp::DestroyAppWindow()
 {
-    App::AppWindows::DestroyAppWindow();
-    m_State = App::State::Exiting;
+    Bogus::App::AppWindows::DestroyAppWindow();
+    m_State = Bogus::App::State::Exiting;
 }
 
 } // end namespace TestApp

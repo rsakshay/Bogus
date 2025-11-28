@@ -9,7 +9,7 @@ namespace TestApp
 
 // ------------------------------------------------------
 // ------------------------------------------------------
-class TestAppApp : ASR::App::AppWindows
+class TestAppApp : Bogus::App::AppWindows
 {
   public:
     void ExecuteApp() override;

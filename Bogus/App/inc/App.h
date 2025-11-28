@@ -1,7 +1,7 @@
 #ifndef APP_H
 #define APP_H
 
-namespace ASR
+namespace Bogus
 {
 namespace App
 {
@@ -37,5 +37,5 @@ class Application
 
 extern Application* g_pApp;
 } // namespace App
-} // namespace ASR
+} // namespace Bogus
 #endif

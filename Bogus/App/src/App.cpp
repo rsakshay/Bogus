@@ -1,6 +1,6 @@
 #include "App.h"
 
-namespace ASR
+namespace Bogus
 {
 namespace App
 {
@@ -28,4 +28,4 @@ void Application::Terminate()
     DestroyAppWindow();
 }
 } // namespace App
-} // namespace ASR
+} // namespace Bogus

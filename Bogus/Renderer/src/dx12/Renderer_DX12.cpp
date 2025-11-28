@@ -79,9 +79,9 @@ void Initialize()
 
     CreateDevice( pAdapter, &g_Device );
     CreateCommandQueue( g_Device, D3D12_COMMAND_LIST_TYPE_DIRECT, &g_CommandQueue );
-    CreateSwapChain( ASR::App::g_pAppWindows->m_hWnd, pFactory, g_CommandQueue,
-                     ASR::App::g_pAppWindows->m_uiClientWidth,
-                     ASR::App::g_pAppWindows->m_uiClientHeight, MAX_FRAMES, &g_SwapChain );
+    CreateSwapChain( Bogus::App::g_pAppWindows->m_hWnd, pFactory, g_CommandQueue,
+                     Bogus::App::g_pAppWindows->m_uiClientWidth,
+                     Bogus::App::g_pAppWindows->m_uiClientHeight, MAX_FRAMES, &g_SwapChain );
     g_uiCurrentBackBufferIndex = g_SwapChain->GetCurrentBackBufferIndex();
 
     CreateDescriptorHeap( g_Device, D3D12_DESCRIPTOR_HEAP_TYPE_RTV, MAX_FRAMES,
@@ -162,6 +162,27 @@ void Render()
 
         WaitForFenceValue( g_Fence, uiSignalFenceValue, g_FenceEvent );
     }
+}
+
+void Resize( uint32 uiWidth, uint32 uiHeight )
+{
+    WaitForGPU();
+
+    for( uint32 i = 0; i < MAX_FRAMES; ++i )
+    {
+        DXRelease( &g_BackBuffers[i] );
+        g_uiFrameFenceValues[i] = g_uiFrameFenceValues[g_uiCurrentBackBufferIndex];
+    }
+
+    DXGI_SWAP_CHAIN_DESC desc = {};
+    ASSERT_HROK( g_SwapChain->GetDesc( &desc ), "Failed to get swap chain descriptor." );
+    ASSERT_HROK( g_SwapChain->ResizeBuffers( MAX_FRAMES, uiWidth, uiHeight, desc.BufferDesc.Format,
+                                             desc.Flags ),
+                 "Failed to resize back buffers." );
+
+    g_uiCurrentBackBufferIndex = g_SwapChain->GetCurrentBackBufferIndex();
+
+    UpdateRenderTargetViews( g_Device, g_SwapChain, g_RTVDescriptorHeap );
 }
 
 void Terminate()

@@ -11,17 +11,17 @@ static TCHAR szTitle[] = _T( "BOGUS" );
 // ENTRY POINT
 int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )
 {
-    ASR::App::g_pAppWindows->m_hInstance = hInstance;
-    ASR::App::g_pAppWindows->m_lpCmdLine = lpCmdLine;
-    ASR::App::g_pAppWindows->m_nCmdShow = nCmdShow;
+    Bogus::App::g_pAppWindows->m_hInstance = hInstance;
+    Bogus::App::g_pAppWindows->m_lpCmdLine = lpCmdLine;
+    Bogus::App::g_pAppWindows->m_nCmdShow = nCmdShow;
 
-    ASR::App::g_pAppWindows->ExecuteApp();
+    Bogus::App::g_pAppWindows->ExecuteApp();
 
     return 0;
 }
 
 // ------------------------------------------------------
-namespace ASR
+namespace Bogus
 {
 // ------------------------------------------------------
 namespace App
@@ -99,6 +99,21 @@ void AppWindows::ProcessOSMessages()
     }
 }
 
+// ------------------------------------------------------
+// ------------------------------------------------------
+void AppWindows::HandleResize( uint32 uiWidth, uint32 uiHeight )
+{
+    if( m_uiClientWidth == uiWidth && m_uiClientHeight == uiHeight )
+    {
+        return;
+    }
+
+    m_uiClientWidth = uiWidth;
+    m_uiClientHeight = uiHeight;
+    Renderer::Resize( uiWidth, uiHeight );
+}
+
+// ------------------------------------------------------
 static LRESULT CALLBACK StaticWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     switch( message )
@@ -121,6 +136,17 @@ static LRESULT CALLBACK StaticWndProc( HWND hWnd, UINT message, WPARAM wParam, L
     }
     break;
 
+    case WM_SIZE:
+    {
+        RECT clientRect = {};
+        GetClientRect( hWnd, &clientRect );
+
+        uint32 const uiWidth = clientRect.right - clientRect.left;
+        uint32 const uiHeight = clientRect.bottom - clientRect.top;
+        g_pAppWindows->HandleResize( uiWidth, uiHeight );
+    }
+    break;
+
     case WM_CREATE:
     {
         SetActiveWindow( hWnd );
@@ -136,4 +162,4 @@ static LRESULT CALLBACK StaticWndProc( HWND hWnd, UINT message, WPARAM wParam, L
 }
 
 } // end namespace App
-} // end namespace ASR
+} // namespace Bogus
