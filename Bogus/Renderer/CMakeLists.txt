@@ -7,8 +7,9 @@ set( HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/inc/Renderer.h"
 )
 
+#TODO(asr): Check to see if we are building for windows
 set( SRC_FILES
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/Renderer_DX12.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/dx12/Renderer_DX12.cpp"
 )
 
 add_library( "${m_TargetName}"
@@ -27,6 +28,7 @@ target_include_directories( "${m_TargetName}"
 
 target_link_libraries( "${m_TargetName}"
  PUBLIC
+    Bogus::App
     Bogus::External
 )
 set_target_properties( "${m_TargetName}"

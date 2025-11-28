@@ -5,6 +5,7 @@ project( "${m_TargetName}" LANGUAGES CXX )
 
 set( HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/SMHasher/MurmurHash3.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/dx12/d3d12.h"
 )
 
 set( SRC_FILES
@@ -13,14 +14,14 @@ set( SRC_FILES
 
 add_library( "${m_TargetName}"
     STATIC
-    ${HEADER_FILES} 
+    ${HEADER_FILES}
     ${SRC_FILES}
 )
 
 add_library( "Bogus::${m_TargetName}" ALIAS "${m_TargetName}" )
 
 target_include_directories( "${m_TargetName}"
-    PUBLIC 
+    PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}/SMHasher"
 )
 
