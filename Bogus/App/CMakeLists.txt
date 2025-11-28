@@ -32,8 +32,9 @@ target_include_directories( "${m_TargetName}"
 )
 
 target_link_libraries( "${m_TargetName}"
- PUBLIC
-  Bogus::Core
+    PUBLIC
+        Bogus::Core
+        Bogus::Renderer
 )
 set_target_properties( "${m_TargetName}"
     PROPERTIES

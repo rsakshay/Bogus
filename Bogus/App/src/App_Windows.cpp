@@ -1,4 +1,7 @@
 #include "App_Windows.h"
+
+#include "Renderer.h"
+
 #include <tchar.h>
 #include <winuser.h>
 
@@ -62,7 +65,8 @@ void AppWindows::CreateAppWindow( CreateWindowParams const& kParams )
     m_hWnd = CreateWindowEx(
         WS_EX_OVERLAPPEDWINDOW, szWindowClass, szTitle,
         ( WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX ),
-        CW_USEDEFAULT, CW_USEDEFAULT, 1920, 1080, NULL, NULL, m_hInstance, NULL );
+        CW_USEDEFAULT, CW_USEDEFAULT, m_uiClientWidth, m_uiClientHeight, NULL, NULL, m_hInstance,
+        NULL );
 
     if( !m_hWnd )
     {
@@ -70,6 +74,7 @@ void AppWindows::CreateAppWindow( CreateWindowParams const& kParams )
         return;
     }
 
+    Bogus::Renderer::Initialize();
     ShowWindow( m_hWnd, m_nCmdShow );
     UpdateWindow( m_hWnd );
 }
@@ -78,6 +83,7 @@ void AppWindows::CreateAppWindow( CreateWindowParams const& kParams )
 // ------------------------------------------------------
 void AppWindows::DestroyAppWindow()
 {
+    Bogus::Renderer::Terminate();
     DestroyWindow( m_hWnd );
 }
 
@@ -99,13 +105,7 @@ static LRESULT CALLBACK StaticWndProc( HWND hWnd, UINT message, WPARAM wParam, L
     {
     case WM_PAINT:
     {
-        PAINTSTRUCT ps;
-        HDC hdc;
-        TCHAR greeting[] = _T( "Hi! I am bogus. Testing clean exit" );
-
-        hdc = BeginPaint( hWnd, &ps );
-        TextOut( hdc, 5, 5, greeting, _tcslen( greeting ) );
-        EndPaint( hWnd, &ps );
+        Bogus::Renderer::Render();
     }
     break;
 

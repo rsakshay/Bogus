@@ -22,6 +22,8 @@ class AppWindows : public Application
     virtual void ProcessOSMessages() override;
 
     HWND m_hWnd;
+    uint32 m_uiClientWidth = 1920;
+    uint32 m_uiClientHeight = 1080;
     HINSTANCE m_hInstance;
     LPSTR m_lpCmdLine;
     int32 m_nCmdShow;

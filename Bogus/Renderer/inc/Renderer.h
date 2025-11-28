@@ -3,6 +3,8 @@
 
 namespace Bogus::Renderer
 {
-static void Draw();
-}
+void Initialize();
+void Render();
+void Terminate();
+} // namespace Bogus::Renderer
 #endif
