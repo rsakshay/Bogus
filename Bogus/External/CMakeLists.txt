@@ -1,37 +1,21 @@
 cmake_minimum_required( VERSION 3.20 ) # Latest version of CMake when this file was created.
 
-set( m_TargetName "External" )
-project( "${m_TargetName}" LANGUAGES CXX )
+project( "External" )
 
-set( HEADER_FILES
-    "${CMAKE_CURRENT_SOURCE_DIR}/SMHasher/MurmurHash3.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/dx12/d3d12.h"
+set( m_BogusExternalLibraries
+    "${CMAKE_CURRENT_SOURCE_DIR}/SMHasher"
 )
 
-set( SRC_FILES
-    "${CMAKE_CURRENT_SOURCE_DIR}/SMHasher/MurmurHash3.cpp"
-)
+################################################################################
 
-add_library( "${m_TargetName}"
-    STATIC
-    ${HEADER_FILES}
-    ${SRC_FILES}
-)
+foreach( library ${m_BogusExternalLibraries} )
 
-add_library( "Bogus::${m_TargetName}" ALIAS "${m_TargetName}" )
+    if( EXISTS "${library}" )
+        add_subdirectory( "${library}" )
+    endif()
 
-target_include_directories( "${m_TargetName}"
-    PUBLIC
-        "${CMAKE_CURRENT_SOURCE_DIR}/SMHasher"
-)
+endforeach()
 
-target_link_libraries( "${m_TargetName}"
-)
-set_target_properties( "${m_TargetName}"
-    PROPERTIES
-        FOLDER "Bogus"
-)
+set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}" PARENT_SCOPE )
 
-
-# Set the startup project
-set_property( DIRECTORY PROPERTY VS_STARTUP_PROJECT "${m_TargetName}" )
+################################################################################

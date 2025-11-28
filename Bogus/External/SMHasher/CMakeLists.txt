@@ -1,19 +1,14 @@
 cmake_minimum_required( VERSION 3.20 ) # Latest version of CMake when this file was created.
 
-set( m_TargetName "Core" )
+set( m_TargetName "SMHasher" )
 project( "${m_TargetName}" LANGUAGES CXX )
 
 set( HEADER_FILES
-    "${CMAKE_CURRENT_SOURCE_DIR}/inc/Core_Arena.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/inc/Core_String.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/inc/Core_Vector.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/inc/Core_Utility.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/inc/Globals.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/inc/MurmurHash3.h"
 )
 
 set( SRC_FILES
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/Core_Arena.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/Core_String.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/MurmurHash3.cpp"
 )
 
 add_library( "${m_TargetName}"
@@ -22,7 +17,7 @@ add_library( "${m_TargetName}"
     ${SRC_FILES}
 )
 
-add_library( "Bogus::${m_TargetName}" ALIAS "${m_TargetName}" )
+add_library( "Bogus::External::${m_TargetName}" ALIAS "${m_TargetName}" )
 
 target_include_directories( "${m_TargetName}"
     PUBLIC
@@ -32,12 +27,10 @@ target_include_directories( "${m_TargetName}"
 )
 
 target_link_libraries( "${m_TargetName}"
- PUBLIC
-    Bogus::External::SMHasher
 )
 set_target_properties( "${m_TargetName}"
     PROPERTIES
-        FOLDER "Bogus"
+    FOLDER "Bogus_External"
 )
 
 

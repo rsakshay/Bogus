@@ -1,10 +1,7 @@
-#include "App_Windows.h"
 #include "Renderer.h"
 #include "assert.h"
 #include "d3d12.h"
 #include "dxgi1_4.h"
-#include <combaseapi.h>
-#include <dxgi1_3.h>
 
 namespace Bogus::Renderer
 {
@@ -52,7 +49,7 @@ static void GetHardwareAdapter( IDXGIFactory4* pFactory, IDXGIAdapter1** ppOutAd
 
         // Check to see if the adapter supports Direct3D 12, but don't create the
         // actual device yet.
-        if( SUCCEEDED( D3D12CreateDevice( pAdapter, D3D_FEATURE_LEVEL_11_0, _uuidof( ID3D12Device ),
+        if( SUCCEEDED( D3D12CreateDevice( pAdapter, D3D_FEATURE_LEVEL_11_0, IID_ID3D12Device2,
                                           nullptr ) ) )
         {
             *ppOutAdapter = pAdapter;

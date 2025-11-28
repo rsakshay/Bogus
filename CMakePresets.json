@@ -19,7 +19,6 @@
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
             }
         },
-
         {
             "name": "BaseApp_Base",
             "hidden": true,
@@ -49,24 +48,35 @@
         {
             "name": "BaseApp_Debug_Linux",
             "hidden": false,
-            "inherits":["Linux", "BaseApp_Debug"]
+            "inherits": [
+                "Linux",
+                "BaseApp_Debug"
+            ]
         },
         {
             "name": "BaseApp_Release_Linux",
             "hidden": false,
-            "inherits":["Linux", "BaseApp_Release"]
+            "inherits": [
+                "Linux",
+                "BaseApp_Release"
+            ]
         },
         {
             "name": "BaseApp_Debug_Windows",
             "hidden": false,
-            "inherits":["Windows", "BaseApp_Debug"]
+            "inherits": [
+                "Windows",
+                "BaseApp_Debug"
+            ]
         },
         {
             "name": "BaseApp_Release_Windows",
             "hidden": false,
-            "inherits":["Windows", "BaseApp_Release"]
+            "inherits": [
+                "Windows",
+                "BaseApp_Release"
+            ]
         },
-
         {
             "name": "TestApp_Base",
             "hidden": true,
@@ -93,27 +103,37 @@
                 "CMAKE_BUILD_TYPE": "Release"
             }
         },
-
         {
             "name": "TestApp_Debug_Linux",
             "hidden": false,
-            "inherits":["Linux", "TestApp_Debug"]
+            "inherits": [
+                "Linux",
+                "TestApp_Debug"
+            ]
         },
         {
             "name": "TestApp_Release_Linux",
             "hidden": false,
-            "inherits":["Linux", "TestApp_Release"]
+            "inherits": [
+                "Linux",
+                "TestApp_Release"
+            ]
         },
-
         {
             "name": "TestApp_Debug_Windows",
             "hidden": false,
-            "inherits":["Windows", "TestApp_Debug"]
+            "inherits": [
+                "Windows",
+                "TestApp_Debug"
+            ]
         },
         {
             "name": "TestApp_Release_Windows",
             "hidden": false,
-            "inherits":["Windows", "TestApp_Release"]
+            "inherits": [
+                "Windows",
+                "TestApp_Release"
+            ]
         }
     ],
     "buildPresets": [
@@ -133,7 +153,6 @@
             "name": "BaseApp_Release_Windows",
             "configurePreset": "BaseApp_Release_Windows"
         },
-
         {
             "name": "TestApp_Debug_Linux",
             "configurePreset": "TestApp_Debug_Linux"

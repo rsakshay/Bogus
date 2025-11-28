@@ -27,9 +27,13 @@ target_include_directories( "${m_TargetName}"
 )
 
 target_link_libraries( "${m_TargetName}"
- PUBLIC
-    Bogus::App
-    Bogus::External
+    PUBLIC
+        Bogus::App
+    PRIVATE
+        d3d12
+        dxgi
+        dxguid
+
 )
 set_target_properties( "${m_TargetName}"
     PROPERTIES

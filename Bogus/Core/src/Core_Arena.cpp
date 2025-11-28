@@ -55,6 +55,7 @@ uint8* ArenaPushNoZero( Arena* pArena, uint64 uiSize )
 uint8* ArenaPushAligned( Arena* pArena, uint64 uiAlignment )
 {
     assert( 0 && "Not implemented" );
+    return nullptr;
 }
 
 // ------------------------------------------------------
