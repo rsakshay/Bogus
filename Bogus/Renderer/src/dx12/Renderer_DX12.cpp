@@ -1,12 +1,11 @@
-#include "App.h"
 #include "Globals.h"
 #include "Renderer.h"
 
 #include "App_Windows.h"
 
-#include "assert.h"
 #include "d3d12.h"
 #include "dxgi1_6.h"
+#include <iostream>
 
 namespace Bogus::Renderer
 {
@@ -118,7 +117,7 @@ void Render()
     g_CommandList->Reset( pCommandAllocator, nullptr );
 
     { // Clear render target
-        D3D12_RESOURCE_BARRIER barrier;
+        D3D12_RESOURCE_BARRIER barrier = {};
         barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
         barrier.Transition = { pBackBuffer, D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES,
                                D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET };
@@ -134,7 +133,7 @@ void Render()
     }
 
     { // Present
-        D3D12_RESOURCE_BARRIER barrier;
+        D3D12_RESOURCE_BARRIER barrier = {};
         barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
         barrier.Transition = { pBackBuffer, D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES,
                                D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT };
@@ -158,6 +157,8 @@ void Render()
                 : 0;
         ASSERT_HROK( g_SwapChain->Present( uiSyncInterval, uiPresentFlags ),
                      "Failed to present Swap Chain" );
+
+        g_uiCurrentBackBufferIndex = g_SwapChain->GetCurrentBackBufferIndex();
 
         WaitForFenceValue( g_Fence, uiSignalFenceValue, g_FenceEvent );
     }
@@ -198,9 +199,13 @@ void Terminate()
 
 static bool ASSERT_HROK( HRESULT hr, char const* szMsg )
 {
-    bool const bFailed = FAILED( hr );
-    assert( !bFailed && szMsg );
-    return SUCCEEDED( hr );
+    bool const bFailedHR = FAILED( hr );
+    if( bFailedHR )
+    {
+        std::cerr << printf( "[ERROR]: %s\n", szMsg );
+        __debugbreak();
+    }
+    return !bFailedHR;
 }
 
 static void GetHardwareAdapter( IDXGIFactory4* pFactory, IDXGIAdapter1** ppOutAdapter )
@@ -211,7 +216,7 @@ static void GetHardwareAdapter( IDXGIFactory4* pFactory, IDXGIAdapter1** ppOutAd
         IDXGIAdapter1* pAdapter = nullptr;
         if( DXGI_ERROR_NOT_FOUND == pFactory->EnumAdapters1( adapterIndex, &pAdapter ) )
         {
-            assert( 0 && "No more adapters to enumerate." );
+            std::cerr << "No more adapters to enumerate.";
             break;
         }
 
