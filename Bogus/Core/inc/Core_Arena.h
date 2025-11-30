@@ -2,7 +2,7 @@
 #define CORE_ARENA_H
 #include "Globals.h"
 
-namespace ASR
+namespace Bogus
 {
 namespace Core
 {
@@ -41,5 +41,5 @@ template <typename T> T* ArenaPushArrayNoZero( Arena* pArena, uint32 uiCount )
 }
 
 } // namespace Core
-} // namespace ASR
+} // namespace Bogus
 #endif

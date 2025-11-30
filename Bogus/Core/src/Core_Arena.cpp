@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <cstring>
 
-namespace ASR
+namespace Bogus
 {
 namespace Core
 {
@@ -92,4 +92,4 @@ void ArenaClear( Arena* pArena )
 }
 
 } // namespace Core
-} // namespace ASR
+} // namespace Bogus

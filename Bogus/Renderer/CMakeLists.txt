@@ -3,13 +3,18 @@ cmake_minimum_required( VERSION 3.20 ) # Latest version of CMake when this file 
 set( m_TargetName "Renderer" )
 project( "${m_TargetName}" LANGUAGES CXX )
 
+#TODO(asr): Check to see if we are building for windows
 set( HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/inc/Renderer.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/inc/dx12/RendererDX12_CommandList.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/inc/dx12/RendererDX12_Utils.h"
 )
 
 #TODO(asr): Check to see if we are building for windows
 set( SRC_FILES
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/dx12/Renderer_DX12.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/dx12/RendererDX12.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/dx12/RendererDX12_CommandList.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/dx12/RendererDX12_Utils.cpp"
 )
 
 add_library( "${m_TargetName}"
@@ -22,6 +27,7 @@ add_library( "Bogus::${m_TargetName}" ALIAS "${m_TargetName}" )
 
 target_include_directories( "${m_TargetName}"
     PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/inc"
         "${CMAKE_CURRENT_SOURCE_DIR}/inc"
         "${CMAKE_CURRENT_SOURCE_DIR}/src"
 )

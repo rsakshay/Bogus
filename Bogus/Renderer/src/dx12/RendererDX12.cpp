@@ -1,10 +1,12 @@
 #include "Globals.h"
 #include "Renderer.h"
+#include "dx12/RendererDX12_Utils.h"
 
 #include "App_Windows.h"
+#include "Core_Assert.h"
 
 #include "d3d12.h"
-#include "dxgi1_6.h"
+#include "dxgi1_5.h"
 #include <iostream>
 
 namespace Bogus::Renderer
@@ -42,7 +44,6 @@ template <typename T> static void DXRelease( T** ppObj )
 }
 
 // static internals decls
-static bool ASSERT_HROK( HRESULT hr, char const* szMsg );
 static void GetHardwareAdapter( IDXGIFactory4* pFactory, IDXGIAdapter1** ppOutAdapter );
 static void CreateDevice( IDXGIAdapter1* pAdapter, ID3D12Device2** ppOutDevice );
 static void CreateCommandQueue( ID3D12Device2* pDevice, D3D12_COMMAND_LIST_TYPE type,
@@ -216,17 +217,6 @@ void Terminate()
     g_uiCurrentBackBufferIndex = 0;
     g_uiRTVDescriptorSize = 0;
     g_uiFenceValue = 0;
-}
-
-static bool ASSERT_HROK( HRESULT hr, char const* szMsg )
-{
-    bool const bFailedHR = FAILED( hr );
-    if( bFailedHR )
-    {
-        std::cerr << printf( "[ERROR]: %s\n", szMsg );
-        __debugbreak();
-    }
-    return !bFailedHR;
 }
 
 static void GetHardwareAdapter( IDXGIFactory4* pFactory, IDXGIAdapter1** ppOutAdapter )

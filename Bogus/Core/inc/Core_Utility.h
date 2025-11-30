@@ -3,7 +3,7 @@
 #include "Globals.h"
 #include "MurmurHash3.h"
 
-namespace ASR
+namespace Bogus
 {
 namespace Core
 {
@@ -15,7 +15,7 @@ uint32 Hash32( void const* pData, int const len )
     return uiHash;
 }
 
-}
+} // namespace Core
 
-}
+} // namespace Bogus
 #endif

@@ -5,8 +5,8 @@
 
 int main()
 {
-    using namespace ASR::Core;
-    ASR::Core::String::Buffer<128> buffer;
+    using namespace Bogus::Core;
+    Bogus::Core::String::Buffer<128> buffer;
     buffer = "MyBuffer";
     buffer.Terminate();
     buffer += " is amazing!";
@@ -22,7 +22,7 @@ int main()
     pMyArr[uiCount++] = 420;
     pMyArr[uiCount++] = 67;
 
-    // ASR::Core::Vector<uint32> myVec;
+    // Bogus::Core::Vector<uint32> myVec;
     // myVec.push_back( 69 );
     // myVec.push_back( 420 );
     // myVec.reserve( 20 );
@@ -39,15 +39,15 @@ int main()
         printf( "\n[%u]: %u", i, uiItem );
     }
 
-    using Uint32MapPair = ASR::Core::VectorMapPair<uint32, uint32>;
-    using Uint32MapPairVector = ASR::Core::Vector<Uint32MapPair>;
-    using Uint32Map = ASR::Core::VectorMap<Uint32MapPairVector>;
+    using Uint32MapPair = Bogus::Core::VectorMapPair<uint32, uint32>;
+    using Uint32MapPairVector = Bogus::Core::Vector<Uint32MapPair>;
+    using Uint32Map = Bogus::Core::VectorMap<Uint32MapPairVector>;
 
     Uint32Map myMap;
     myMap.add( 0, 69 );
     myMap.add( 1, 420 );
     myMap.add( 2, 911 );
-    myMap.add( ASR::Core::String::CalcHash( "Key1" ), 1234 );
+    myMap.add( Bogus::Core::String::CalcHash( "Key1" ), 1234 );
 
     printf( "\n\nUint32Map: %d", uiCount );
     for( Uint32MapPair const& Pair : myMap )

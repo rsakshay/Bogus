@@ -3,22 +3,20 @@
 #include "Globals.h"
 #include "stdlib.h"
 
-namespace ASR
+namespace Bogus
 {
 
 namespace Core
 {
 
-
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
-template<typename tElemType, uint32 uiGrowthSize = 8>
-struct Vector
+template <typename tElemType, uint32 uiGrowthSize = 8> struct Vector
 {
     using ELEMTYPE = tElemType;
     enum
     {
-        eGrowthSize   = uiGrowthSize,
+        eGrowthSize = uiGrowthSize,
         eInvalidIndex = max_uint32,
     };
 
@@ -29,36 +27,92 @@ struct Vector
         iterator( iterator const& rhs ) : m_pElement( rhs.m_pElement ) {}
         ~iterator() { m_pElement = 0; }
 
-        iterator& operator++()          { ++m_pElement; return *this; }
-        iterator& operator--()          { --m_pElement; return *this; }
-        iterator& operator++( int )     { iterator temp = *this; ++(*this); return temp; }
-        iterator& operator--( int )     { iterator temp = *this; --(*this); return temp; }
-        iterator& operator+=( int i )   { m_pElement += i; return *this; }
-        iterator& operator-=( int i )   { m_pElement -= i; return *this; }
-        ELEMTYPE& operator*()           { return *m_pElement; }
-        ELEMTYPE* operator->()          { return m_pElement; }
+        iterator& operator++()
+        {
+            ++m_pElement;
+            return *this;
+        }
+        iterator& operator--()
+        {
+            --m_pElement;
+            return *this;
+        }
+        iterator& operator++( int )
+        {
+            iterator temp = *this;
+            ++( *this );
+            return temp;
+        }
+        iterator& operator--( int )
+        {
+            iterator temp = *this;
+            --( *this );
+            return temp;
+        }
+        iterator& operator+=( int i )
+        {
+            m_pElement += i;
+            return *this;
+        }
+        iterator& operator-=( int i )
+        {
+            m_pElement -= i;
+            return *this;
+        }
+        ELEMTYPE& operator*() { return *m_pElement; }
+        ELEMTYPE* operator->() { return m_pElement; }
 
-        friend bool     operator==( iterator const& lhs, iterator const& rhs ) { return lhs.m_pElement == rhs.m_pElement; }
-        friend bool     operator!=( iterator const& lhs, iterator const& rhs ) { return lhs.m_pElement != rhs.m_pElement; }
-        friend iterator operator+(  iterator& lhs, iterator const& rhs )       { lhs += rhs; return lhs; }
-        friend iterator operator-(  iterator& lhs, iterator const& rhs )       { lhs -= rhs; return lhs; }
-        friend iterator operator+(  iterator& lhs, int const& rhs )            { lhs += rhs; return lhs; }
-        friend iterator operator-(  iterator& lhs, int const& rhs )            { lhs -= rhs; return lhs; }
+        friend bool operator==( iterator const& lhs, iterator const& rhs )
+        {
+            return lhs.m_pElement == rhs.m_pElement;
+        }
+        friend bool operator!=( iterator const& lhs, iterator const& rhs )
+        {
+            return lhs.m_pElement != rhs.m_pElement;
+        }
+        friend iterator operator+( iterator& lhs, iterator const& rhs )
+        {
+            lhs += rhs;
+            return lhs;
+        }
+        friend iterator operator-( iterator& lhs, iterator const& rhs )
+        {
+            lhs -= rhs;
+            return lhs;
+        }
+        friend iterator operator+( iterator& lhs, int const& rhs )
+        {
+            lhs += rhs;
+            return lhs;
+        }
+        friend iterator operator-( iterator& lhs, int const& rhs )
+        {
+            lhs -= rhs;
+            return lhs;
+        }
 
-    private:
+      private:
         ELEMTYPE* m_pElement;
     };
 
     iterator begin() { return iterator( m_pData ); }
-    iterator end()   { return iterator( m_pData + m_uiSize ); }
+    iterator end() { return iterator( m_pData + m_uiSize ); }
 
-    ELEMTYPE&       operator[]( uint32 const uiIndex )     { assert( uiIndex < m_uiSize ); return m_pData[ uiIndex ]; }
-    ELEMTYPE const& operator[](uint32 const uiIndex) const { assert( uiIndex < m_uiSize ); return m_pData[ uiIndex ]; }
+    ELEMTYPE& operator[]( uint32 const uiIndex )
+    {
+        assert( uiIndex < m_uiSize );
+        return m_pData[uiIndex];
+    }
+    ELEMTYPE const& operator[]( uint32 const uiIndex ) const
+    {
+        assert( uiIndex < m_uiSize );
+        return m_pData[uiIndex];
+    }
 
-    ELEMTYPE const& front() const { return m_pData[ 0 ]; }
-    ELEMTYPE const& back() const  { return m_pData[ m_uiSize - 1 ]; }
+    ELEMTYPE const& front() const { return m_pData[0]; }
+    ELEMTYPE const& back() const { return m_pData[m_uiSize - 1]; }
 
-    uint32 const size()     const { return m_uiSize;     }
+    uint32 const size() const { return m_uiSize; }
     uint32 const capacity() const { return m_uiCapacity; }
 
     ELEMTYPE* push_back_new()
@@ -66,8 +120,8 @@ struct Vector
         if( m_uiSize == capacity() )
             reserve( m_uiSize + 1 );
 
-        new( &m_pData[ m_uiSize ] ) ELEMTYPE();
-        return &m_pData[ m_uiSize++ ];
+        new( &m_pData[m_uiSize] ) ELEMTYPE();
+        return &m_pData[m_uiSize++];
     }
 
     void push_back( ELEMTYPE const& in_Element )
@@ -87,12 +141,12 @@ struct Vector
         if( m_uiSize < uiSize )
         {
             for( uint32 i = m_uiSize; i < uiSize; i++ )
-                new( &m_pData[ i ] ) ELEMTYPE();
+                new( &m_pData[i] ) ELEMTYPE();
         }
         else
         {
             for( uint32 i = uiSize; i < m_uiSize; i++ )
-                m_pData[ i ].~ELEMTYPE();
+                m_pData[i].~ELEMTYPE();
         }
 
         m_uiSize = uiSize;
@@ -110,16 +164,17 @@ struct Vector
     {
         for( uint32 i = 0; i < m_uiSize; ++i )
         {
-            if( m_pData[ i ] == in_data )
+            if( m_pData[i] == in_data )
                 return i;
         }
         return eInvalidIndex;
     }
 
-private:
+  private:
     void move( uint32 const uiNewCapacity )
     {
-        ELEMTYPE* pNewData = static_cast<ELEMTYPE*>( malloc( sizeof( ELEMTYPE ) * ( uiNewCapacity ) ) );
+        ELEMTYPE* pNewData =
+            static_cast<ELEMTYPE*>( malloc( sizeof( ELEMTYPE ) * ( uiNewCapacity ) ) );
         assert( pNewData );
         if( m_pData )
         {
@@ -131,18 +186,16 @@ private:
         m_uiCapacity = uiNewCapacity;
     }
 
-    ELEMTYPE* m_pData     = nullptr;
-    uint32   m_uiSize     = 0;
-    uint32   m_uiCapacity = 0;
+    ELEMTYPE* m_pData = nullptr;
+    uint32 m_uiSize = 0;
+    uint32 m_uiCapacity = 0;
 };
 
-
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
-template<typename tKey, typename tElement>
-struct VectorMapPair
+template <typename tKey, typename tElement> struct VectorMapPair
 {
-    using KEY     = tKey;     
+    using KEY = tKey;
     using ELEMENT = tElement;
 
     VectorMapPair() {}
@@ -152,24 +205,25 @@ struct VectorMapPair
         m_Element = element;
     }
 
-    KEY     m_Key;
+    KEY m_Key;
     ELEMENT m_Element;
 };
 
-
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
-template<typename tPairVector>
-struct VectorMap
+template <typename tPairVector> struct VectorMap
 {
-    using VEC      = tPairVector;
-    using PAIR     = typename VEC::ELEMTYPE;
-    using KEY      = typename VEC::ELEMTYPE::KEY;
+    using VEC = tPairVector;
+    using PAIR = typename VEC::ELEMTYPE;
+    using KEY = typename VEC::ELEMTYPE::KEY;
     using ELEMTYPE = typename VEC::ELEMTYPE::ELEMENT;
     using iterator = typename VEC::iterator;
 
     static constexpr PAIR* s_InvalidEntry = nullptr;
-    enum { eInvalidIndex = max_uint32 };
+    enum
+    {
+        eInvalidIndex = max_uint32
+    };
 
     uint32 add( KEY const& Key, ELEMTYPE const& Element, uint32* pExists = 0 )
     {
@@ -189,39 +243,39 @@ struct VectorMap
         return m_Vec.size() - 1;
     }
 
-    //PAIR& add( PAIR const& Pair, uint32* pExists = 0 )
+    // PAIR& add( PAIR const& Pair, uint32* pExists = 0 )
     //{
-    //    PAIR* pPair = find( Pair.m_Key );
-    //    if( pPair == s_InvalidEntry )
-    //    {
-    //        m_Vec.push_back( Pair );
-    //        pPair = &m_Vec.back();
-    //    }
-    //    else
-    //    {
-    //        if( pExists )
-    //            *pExists = 1;
-    //    }
+    //     PAIR* pPair = find( Pair.m_Key );
+    //     if( pPair == s_InvalidEntry )
+    //     {
+    //         m_Vec.push_back( Pair );
+    //         pPair = &m_Vec.back();
+    //     }
+    //     else
+    //     {
+    //         if( pExists )
+    //             *pExists = 1;
+    //     }
 
     //    return *pPair;
     //}
 
-    //PAIR const* find( KEY const& key ) const
+    // PAIR const* find( KEY const& key ) const
     //{
-    //    for( uint32 i = 0; i < m_Vec.size(); ++i  )
-    //    {
-    //        PAIR const& Pair = m_Vec[ i ];
-    //        if( Pair.m_Key == key )
-    //            return &Pair;
-    //    }
-    //    return s_InvalidEntry;
-    //}
+    //     for( uint32 i = 0; i < m_Vec.size(); ++i  )
+    //     {
+    //         PAIR const& Pair = m_Vec[ i ];
+    //         if( Pair.m_Key == key )
+    //             return &Pair;
+    //     }
+    //     return s_InvalidEntry;
+    // }
 
     uint32 find( KEY const& key ) const
     {
-        for( uint32 i = 0; i < m_Vec.size(); ++i  )
+        for( uint32 i = 0; i < m_Vec.size(); ++i )
         {
-            PAIR const& Pair = m_Vec[ i ];
+            PAIR const& Pair = m_Vec[i];
             if( Pair.m_Key == key )
                 return i;
         }
@@ -231,24 +285,20 @@ struct VectorMap
     ELEMTYPE& get_data( uint32 const uiIndex ) const
     {
         assert( uiIndex < m_Vec.size() );
-        return m_Vec[ uiIndex ].m_Element;
+        return m_Vec[uiIndex].m_Element;
     }
 
-    ELEMTYPE& find_data( KEY const& key ) const
-    {
-        return m_Vec[ find( key ) ].m_Element;
-    }
+    ELEMTYPE& find_data( KEY const& key ) const { return m_Vec[find( key )].m_Element; }
 
     iterator begin() { return m_Vec.begin(); }
     iterator end() { return m_Vec.end(); }
 
-private:
+  private:
     VEC m_Vec;
 };
 
-}
+} // namespace Core
 
-}
-
+} // namespace Bogus
 
 #endif
