@@ -1,7 +1,7 @@
 #include "Core_Arena.h"
 #include "Core_String.h"
 #include "Core_Vector.h"
-#include <iostream>
+#include "stdio.h"
 
 int main()
 {
@@ -11,31 +11,26 @@ int main()
     buffer.Terminate();
     buffer += " is amazing!";
     buffer.Terminate();
-    std::cout << buffer.c_str();
+    printf( "%s\n\n", buffer.c_str() );
 
-    Arena arena = ArenaAlloc( 1024 * 1024 );
-    constexpr uint32 MAX_ARRAY = 10;
-    uint32* pMyArr = ArenaPushArray<uint32>( &arena, MAX_ARRAY * sizeof( uint32 ) );
-    uint32 uiCount = 0;
-    pMyArr[uiCount++] = 69;
-    pMyArr[uiCount++] = 55;
-    pMyArr[uiCount++] = 420;
-    pMyArr[uiCount++] = 67;
+    Arena* pArena = NEW_ARENA(.tokName = "Thunderdome!!" );
+    printf( "Arena Created with name: %.*s\n", pArena->initParams.tokName.m_uiLen,
+            pArena->initParams.tokName.m_pData );
 
-    // Bogus::Core::Vector<uint32> myVec;
-    // myVec.push_back( 69 );
-    // myVec.push_back( 420 );
-    // myVec.reserve( 20 );
-    //  myVec[ 1 ] = 420;
+    constexpr uint32 MAX_CAPACITY = 10;
+    Bogus::Core::VectorStatic<uint32> myVec = ArenaPushVector<uint32>( pArena, MAX_CAPACITY );
+    myVec.push_back( 69 );
+    myVec.push_back( 55 );
+    myVec.push_back( 420 );
+    myVec.push_back( 67 );
 
-    std::cout << "\n";
-
-    printf( "\nArenaArray: %d", uiCount );
+    uint32 uiCount = myVec.size();
+    printf( "\nArenaVector: %d", uiCount );
     printf( "\nSize: %d", uiCount );
-    printf( "\nCapacity: %d", MAX_ARRAY );
+    printf( "\nCapacity: %d", MAX_CAPACITY );
     for( uint32 i = 0; i < uiCount; ++i )
     {
-        uint32 uiItem = pMyArr[i];
+        uint32 uiItem = myVec[i];
         printf( "\n[%u]: %u", i, uiItem );
     }
 
@@ -56,5 +51,5 @@ int main()
     }
 
     getchar();
-    ArenaRelease( &arena );
+    ArenaRelease( pArena );
 }

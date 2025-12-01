@@ -18,16 +18,16 @@ set( BuildType "Debug" CACHE STRING "The type of build to generate (${m_Configur
 set_property( CACHE BuildType PROPERTY STRINGS ${m_Configurations} )
 
 if( NOT BuildType IN_LIST m_Configurations )
-  message( FATAL_ERROR "Invalid BuildType [${BuildType}]. Valid options are: ${m_Configurations}" )
+    message( FATAL_ERROR "Invalid BuildType [${BuildType}]. Valid options are: ${m_Configurations}" )
 endif()
 
 
 # THIS ONE LINE defines the authoritative version number for the Indus app (and its settings files).
 if(WIN32)
-  project( "${m_TargetName} ${m_BuildDir}"
+    project( "${m_TargetName} ${m_BuildDir}"
          LANGUAGES C CXX RC )
 else()
-  project( "${m_TargetName} ${m_BuildDir}"
+    project( "${m_TargetName} ${m_BuildDir}"
          LANGUAGES C CXX )
 endif()
 
@@ -36,9 +36,9 @@ message( STATUS "Build Type [${BuildType}]." )
 
 add_compile_definitions( "ASR_BUILD_TYPE=\"${BuildType}\"" )
 if( BuildType STREQUAL "Debug" )
-  add_compile_definitions( "ASR_DEBUG" )
+    add_compile_definitions( "ASR_DEBUG" )
 else()
-  add_compile_definitions( "ASR_RELEASE" )
+    add_compile_definitions( "ASR_RELEASE" )
 endif()
 
 set( HEADER_FILES
@@ -62,7 +62,7 @@ target_include_directories( "${m_TargetName}"
 target_link_libraries( "${m_TargetName}"
  PRIVATE
   Bogus::Core
-  Bogus::External
+  Bogus::External::SMHasher
 )
 
 # Set the startup project

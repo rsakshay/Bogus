@@ -1,7 +1,9 @@
 #ifndef CORE_VECTOR_H
 #define CORE_VECTOR_H
+#include "Core_Assert.h"
 #include "Globals.h"
-#include "stdlib.h"
+#include <new.h>
+#include <stdlib.h>
 
 namespace Bogus
 {
@@ -157,7 +159,7 @@ template <typename tElemType, uint32 uiGrowthSize = 8> struct Vector
         if( m_uiCapacity >= uiCapacity )
             return;
 
-        move( POW2_ROUNDUP( uiCapacity, eGrowthSize ) );
+        move( ALIGNUP_POW2( uiCapacity, eGrowthSize ) );
     }
 
     uint32 find_index( ELEMTYPE const& in_data ) const
@@ -184,6 +186,149 @@ template <typename tElemType, uint32 uiGrowthSize = 8> struct Vector
         }
         m_pData = pNewData;
         m_uiCapacity = uiNewCapacity;
+    }
+
+    ELEMTYPE* m_pData = nullptr;
+    uint32 m_uiSize = 0;
+    uint32 m_uiCapacity = 0;
+};
+
+// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
+template <typename tElemType> struct VectorStatic
+{
+    using ELEMTYPE = tElemType;
+    enum
+    {
+        eInvalidIndex = max_uint32,
+    };
+
+    VectorStatic( ELEMTYPE* pData, uint32 uiCapacity )
+        : m_pData( pData ), m_uiCapacity( uiCapacity )
+    {
+    }
+
+    struct iterator
+    {
+        iterator() : m_pElement( 0 ) {}
+        explicit iterator( ELEMTYPE* pElem ) : m_pElement( pElem ) {}
+        iterator( iterator const& rhs ) : m_pElement( rhs.m_pElement ) {}
+        ~iterator() { m_pElement = 0; }
+
+        iterator& operator++()
+        {
+            ++m_pElement;
+            return *this;
+        }
+        iterator& operator--()
+        {
+            --m_pElement;
+            return *this;
+        }
+        iterator& operator++( int )
+        {
+            iterator temp = *this;
+            ++( *this );
+            return temp;
+        }
+        iterator& operator--( int )
+        {
+            iterator temp = *this;
+            --( *this );
+            return temp;
+        }
+        iterator& operator+=( int i )
+        {
+            m_pElement += i;
+            return *this;
+        }
+        iterator& operator-=( int i )
+        {
+            m_pElement -= i;
+            return *this;
+        }
+        ELEMTYPE& operator*() { return *m_pElement; }
+        ELEMTYPE* operator->() { return m_pElement; }
+
+        friend bool operator==( iterator const& lhs, iterator const& rhs )
+        {
+            return lhs.m_pElement == rhs.m_pElement;
+        }
+        friend bool operator!=( iterator const& lhs, iterator const& rhs )
+        {
+            return lhs.m_pElement != rhs.m_pElement;
+        }
+        friend iterator operator+( iterator& lhs, iterator const& rhs )
+        {
+            lhs += rhs;
+            return lhs;
+        }
+        friend iterator operator-( iterator& lhs, iterator const& rhs )
+        {
+            lhs -= rhs;
+            return lhs;
+        }
+        friend iterator operator+( iterator& lhs, int const& rhs )
+        {
+            lhs += rhs;
+            return lhs;
+        }
+        friend iterator operator-( iterator& lhs, int const& rhs )
+        {
+            lhs -= rhs;
+            return lhs;
+        }
+
+      private:
+        ELEMTYPE* m_pElement;
+    };
+
+    iterator begin() { return iterator( m_pData ); }
+    iterator end() { return iterator( m_pData + m_uiSize ); }
+
+    ELEMTYPE& operator[]( uint32 const uiIndex )
+    {
+        assert( uiIndex < m_uiSize );
+        return m_pData[uiIndex];
+    }
+    ELEMTYPE const& operator[]( uint32 const uiIndex ) const
+    {
+        assert( uiIndex < m_uiSize );
+        return m_pData[uiIndex];
+    }
+
+    ELEMTYPE const& front() const { return m_pData[0]; }
+    ELEMTYPE const& back() const { return m_pData[m_uiSize - 1]; }
+
+    uint32 const size() const { return m_uiSize; }
+    uint32 const capacity() const { return m_uiCapacity; }
+
+    ELEMTYPE* push_back_new()
+    {
+        if( m_uiSize == capacity() )
+        {
+            BGASSERT( 0, "Failed to add new element. Array reached max limit." );
+            return nullptr;
+        }
+
+        new( &m_pData[m_uiSize] ) ELEMTYPE();
+        return &m_pData[m_uiSize++];
+    }
+
+    void push_back( ELEMTYPE const& in_Element )
+    {
+        ELEMTYPE* pNewElement = push_back_new();
+        *pNewElement = in_Element;
+    }
+
+    uint32 find_index( ELEMTYPE const& in_data ) const
+    {
+        for( uint32 i = 0; i < m_uiSize; ++i )
+        {
+            if( m_pData[i] == in_data )
+                return i;
+        }
+        return eInvalidIndex;
     }
 
     ELEMTYPE* m_pData = nullptr;

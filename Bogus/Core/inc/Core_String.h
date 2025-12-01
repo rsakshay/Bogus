@@ -22,6 +22,37 @@ template <uint32 t_uiStrLen> uint32 CalcHash( char const ( &szString )[t_uiStrLe
 
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
+struct HashToken
+{
+    HashToken() {}
+    HashToken( char const* pData, uint32 uiLen ) : m_pData( pData ), m_uiLen( uiLen )
+    {
+        m_uiHash = Bogus::Core::Hash32( pData, uiLen );
+    }
+    HashToken( char const* pData, uint32 uiLen, uint32 uiHash )
+        : m_pData( pData ), m_uiLen( uiLen ), m_uiHash( uiHash )
+    {
+    }
+
+    template <uint32 t_uiStrLen>
+    HashToken( char const ( &szString )[t_uiStrLen] ) : HashToken( szString, t_uiStrLen )
+    {
+    }
+
+    void set( char* pData, uint32 uiLen, uint32 uiHash )
+    {
+        m_pData = pData;
+        m_uiLen = uiLen;
+        m_uiHash = uiHash;
+    }
+
+    char const* m_pData = nullptr;
+    uint32 m_uiLen = 0;
+    uint32 m_uiHash = 0;
+};
+
+// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 template <uint32 t_uiCapacity> struct Buffer
 {
   public:
@@ -72,7 +103,6 @@ template <uint32 t_uiCapacity> struct Buffer
         m_pData[m_uiLen] = 0;
     }
 
-  private:
     void append( char const* const pString, uint32 const uiLen )
     {
         assert( m_uiLen + uiLen <= eCapacity );
