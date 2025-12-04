@@ -80,6 +80,18 @@ template <typename T> VectorStatic<T> ArenaPushVector( Arena* pArena, uint32 uiC
     return VectorStatic<T>( pData, uiCapacity );
 }
 
+template <typename T> ElementPool<T> ArenaPushPoolNoZero( Arena* pArena, uint32 uiCapacity )
+{
+    T* pData = ArenaPushArrayNoZero<T>( pArena, uiCapacity );
+    return ElementPool<T>( pData, uiCapacity );
+}
+
+template <typename T> ElementPool<T> ArenaPushPool( Arena* pArena, uint32 uiCapacity )
+{
+    T* pData = ArenaPushArray<T>( pArena, uiCapacity );
+    return ElementPool<T>( pData, uiCapacity );
+}
+
 } // namespace Core
 } // namespace Bogus
 #endif

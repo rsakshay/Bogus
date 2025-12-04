@@ -1,7 +1,7 @@
 #ifndef CORE_ASSERT_H
 #define CORE_ASSERT_H
 
-#define BGASSERT( bExpression, szMsg ) Bogus::Core::AssertWithMessage( #bExpression, #szMsg )
+#define BGASSERT( bExpression, szMsg ) Bogus::Core::AssertWithMessage( bExpression, #szMsg )
 namespace Bogus::Core
 {
 

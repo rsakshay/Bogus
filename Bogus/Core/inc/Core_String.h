@@ -61,6 +61,16 @@ template <uint32 t_uiCapacity> struct Buffer
         eCapacity = t_uiCapacity
     };
 
+    Buffer() = default;
+    Buffer( Buffer const& other ) = default;
+
+    template <uint32 t_uiStringLen> Buffer( char const ( &szString )[t_uiStringLen] )
+    {
+        // Note(asr): Account for null termination hence "-1"
+        m_uiLen = MIN( t_uiStringLen - 1, eCapacity );
+        memcpy( m_pData, szString, m_uiLen );
+    }
+
     template <uint32 t_uiStringLen> Buffer& operator=( char const ( &szString )[t_uiStringLen] )
     {
         // Note(asr): Account for null termination hence "-1"

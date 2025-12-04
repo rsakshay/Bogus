@@ -338,6 +338,122 @@ template <typename tElemType> struct VectorStatic
 
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
+template <typename tElemType> struct ElementPool
+{
+    using ELEMTYPE = tElemType;
+    static constexpr uint32 INVALID = max_uint32;
+    static constexpr uint32 DEAD_ENTRY = 0xdeadffff;
+
+    struct DeadEntry
+    {
+        uint32 uiDeadMark = DEAD_ENTRY;
+        uint32 uiNextFree = INVALID;
+    };
+    static_assert( sizeof( ELEMTYPE ) >= sizeof( DeadEntry ),
+                   "Element size must be bigger than DeadEntry" );
+
+    ElementPool( ELEMTYPE* pData, uint32 uiCapacity ) : m_Vec( pData, uiCapacity ) {}
+
+    template <typename tFunc> void ForEachElement( tFunc func )
+    {
+        for( uint32 i = 0; i < m_Vec.size(); ++i )
+        {
+            DeadEntry* pEntry = reinterpret_cast<DeadEntry*>( &m_Vec[i] );
+            if( pEntry->uiDeadMark == DEAD_ENTRY )
+            {
+                continue;
+            }
+
+            func( i, &m_Vec[i] );
+        }
+    }
+
+    uint32 Create()
+    {
+        // Reuse a dead entry if available
+        if( m_uiNextFree != INVALID )
+        {
+            uint32 uiReusedHandle = m_uiNextFree;
+
+            // Patch up m_uiNextFree
+            DeadEntry* pEntry = reinterpret_cast<DeadEntry*>( &m_Vec[uiReusedHandle] );
+            BGASSERT( pEntry->uiDeadMark == DEAD_ENTRY, "Free handle is not marked dead." );
+            m_uiNextFree = pEntry->uiNextFree;
+
+            new( &m_Vec[uiReusedHandle] ) ELEMTYPE();
+            ++m_uiCount;
+            return uiReusedHandle;
+        }
+
+        ELEMTYPE* pNew = m_Vec.push_back_new();
+        if( !pNew )
+        {
+            return INVALID;
+        }
+
+        ++m_uiCount;
+        return m_Vec.size() - 1;
+    }
+
+    bool Destroy( uint32 uiHandle )
+    {
+        if( uiHandle >= m_Vec.size() )
+        {
+            BGASSERT( 0, "Bad Handle passed in to ElementPool::Destroy" );
+            return false;
+        }
+
+        DeadEntry* pEntry = reinterpret_cast<DeadEntry*>( &m_Vec[uiHandle] );
+        if( pEntry->uiDeadMark == DEAD_ENTRY )
+        {
+            BGASSERT( 0, "Double delete. Handle is already dead." );
+            return false;
+        }
+
+        pEntry->uiDeadMark = DEAD_ENTRY;
+        pEntry->uiNextFree = m_uiNextFree;
+        m_uiNextFree = uiHandle;
+        --m_uiCount;
+        return true;
+    }
+
+    ELEMTYPE* Get( uint32 uiHandle )
+    {
+        if( uiHandle >= m_Vec.size() )
+        {
+            BGASSERT( 0, "Bad handle when getting data from handle." );
+            return nullptr;
+        }
+        DeadEntry* pEntry = reinterpret_cast<DeadEntry*>( &m_Vec[uiHandle] );
+        BGASSERT( pEntry->uiDeadMark != DEAD_ENTRY, "Bad pool access. Getting dead Handle." );
+        return &m_Vec[uiHandle];
+    }
+
+    ELEMTYPE* TryGet( uint32 uiHandle )
+    {
+        if( uiHandle >= m_Vec.size() )
+        {
+            return nullptr;
+        }
+        DeadEntry* pEntry = reinterpret_cast<DeadEntry*>( &m_Vec[uiHandle] );
+        if( pEntry->uiDeadMark == DEAD_ENTRY )
+        {
+            return nullptr;
+        }
+        return &m_Vec[uiHandle];
+    }
+
+    ELEMTYPE& operator[]( uint32 const uiHandle ) { return *Get( uiHandle ); }
+    ELEMTYPE const& operator[]( uint32 const uiHandle ) const { return *Get( uiHandle ); }
+    uint32 const count() const { return m_uiCount; }
+
+    VectorStatic<tElemType> m_Vec;
+    uint32 m_uiNextFree = INVALID;
+    uint32 m_uiCount = 0;
+};
+
+// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 template <typename tKey, typename tElement> struct VectorMapPair
 {
     using KEY = tKey;

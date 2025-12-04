@@ -96,7 +96,7 @@ uint8* ArenaPush( Arena* pArena, uint64 uiSize, uint64 uiAlignment )
 void ArenaPopTo( Arena* pArena, uint64 uiPos )
 {
     BGASSERT( pArena->uiPos >= uiPos, "Attempting to pop memory that is already popped." );
-    BGASSERT( uiPos < pArena->uiCommitSize, "Attempting to pop memory that is not committed" );
+    BGASSERT( uiPos < pArena->uiCommittedSize, "Attempting to pop memory that is not committed" );
     uiPos = MAX( ARENA_HEADER_SIZE, uiPos );
     pArena->uiPos = uiPos;
 }
