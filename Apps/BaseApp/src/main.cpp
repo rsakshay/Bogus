@@ -14,27 +14,70 @@ void RunTest_StringBuffer()
     printf( "%s\n\n", buffer.c_str() );
 }
 
-void RunTest_Vector( Bogus::Core::Arena* pArena )
+void RunTest_VectorStatic( Bogus::Core::Arena* pArena )
 {
+    printf( "\nTesting Static Vector..." );
+    using namespace Bogus::Core;
+
     constexpr uint32 MAX_CAPACITY = 10;
-    Bogus::Core::VectorStatic<uint32> myVec = ArenaPushVector<uint32>( pArena, MAX_CAPACITY );
-    myVec.push_back( 69 );
-    myVec.push_back( 55 );
-    myVec.push_back( 420 );
-    myVec.push_back( 67 );
+    uint32* pData = ArenaPushArray<uint32>( pArena, MAX_CAPACITY );
+    Vector<VectorPolicyStatic<uint32>> myVec( { pData, MAX_CAPACITY } );
+
+    myVec.push( 69 );
+    myVec.push( 55 );
+    myVec.push( 420 );
+    myVec.push( 67 );
 
     uint32 uiCount = myVec.size();
-    printf( "\nArenaVector: %d", uiCount );
     printf( "\nSize: %d", uiCount );
-    printf( "\nCapacity: %d", MAX_CAPACITY );
+    printf( "\nCapacity: %d", myVec.capacity() );
+
     for( uint32 i = 0; i < uiCount; ++i )
     {
         uint32 uiItem = myVec[i];
         printf( "\n[%u]: %u", i, uiItem );
     }
+
+    printf( "\nRunning fill test..." );
+    for( uint32 i = uiCount; i < MAX_CAPACITY; ++i )
+    {
+        myVec.push( 0xBEEF );
+        printf( "\n[%u]: %x", i, myVec[i] );
+    }
+    myVec.push( 0xDEAD );
 }
 
-void RunTest_ElementPool( Bogus::Core::Arena* pArena )
+void RunTest_VectorArena()
+{
+    printf( "\nTesting Arena Vector..." );
+    using namespace Bogus::Core;
+
+    Vector<VectorPolicyArena<uint32>> myVec;
+
+    myVec.push( 69 );
+    myVec.push( 55 );
+    myVec.push( 420 );
+    myVec.push( 67 );
+
+    uint32 uiCount = myVec.size();
+    printf( "\nSize: %d", uiCount );
+    printf( "\nCapacity: %d", myVec.capacity() );
+
+    for( uint32 i = 0; i < uiCount; ++i )
+    {
+        uint32 uiItem = myVec[i];
+        printf( "\n[%u]: %u", i, uiItem );
+    }
+
+    printf( "\nRunning fill test..." );
+    for( uint32 i = uiCount; i < myVec.capacity(); ++i )
+    {
+        myVec.push( 0xBEEF );
+    }
+    myVec.push( 0xDEAD );
+}
+
+void RunTest_ElementPool()
 {
     constexpr uint32 MAX_CAPACITY = 100;
     using namespace Bogus::Core;
@@ -45,7 +88,7 @@ void RunTest_ElementPool( Bogus::Core::Arena* pArena )
         String::Buffer<128> name;
     };
 
-    ElementPool<TestElem> pool = ArenaPushPool<TestElem>( pArena, MAX_CAPACITY );
+    ElementPool<TestElem> pool;
     printf( "\nArenaElementPool created with capacity: %d", MAX_CAPACITY );
 
     auto CreateElem = [&]( TestElem elem, bool bSilent )
@@ -117,12 +160,11 @@ void RunTest_ElementPool( Bogus::Core::Arena* pArena )
 void RunTest_Arena()
 {
     using namespace Bogus::Core;
-    Arena* pArena = NEW_ARENA(.tokName = "Thunderdome!!" );
-    printf( "Arena Created with name: %.*s\n", pArena->initParams.tokName.m_uiLen,
-            pArena->initParams.tokName.m_pData );
+    Arena* pArena = NEW_ARENA(.name = "Thunderdome!!" );
+    printf( "\n\nArena Created with name: %.*s\n", pArena->initParams.name.m_uiLen,
+            pArena->initParams.name.m_pData );
 
-    RunTest_Vector( pArena );
-    RunTest_ElementPool( pArena );
+    RunTest_VectorStatic( pArena );
     ArenaRelease( pArena );
 }
 
@@ -130,7 +172,7 @@ void RunTest_VectorMap()
 {
     using namespace Bogus::Core;
     using Uint32MapPair = Bogus::Core::VectorMapPair<uint32, uint32>;
-    using Uint32MapPairVector = Bogus::Core::Vector<Uint32MapPair>;
+    using Uint32MapPairVector = Bogus::Core::Vector<Bogus::Core::VectorPolicyArena<Uint32MapPair>>;
     using Uint32Map = Bogus::Core::VectorMap<Uint32MapPairVector>;
 
     Uint32Map myMap;
@@ -150,7 +192,9 @@ void RunTest_VectorMap()
 int main()
 {
     RunTest_StringBuffer();
-    RunTest_Arena();
     RunTest_VectorMap();
+    RunTest_Arena();
+    RunTest_VectorArena();
+    RunTest_ElementPool();
     getchar();
 }

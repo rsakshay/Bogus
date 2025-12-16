@@ -1,7 +1,6 @@
 #ifndef CORE_ARENA_H
 #define CORE_ARENA_H
 #include "Core_String.h"
-#include "Core_Vector.h"
 #include "Globals.h"
 
 namespace Bogus
@@ -16,13 +15,14 @@ struct ArenaAllocParams
 {
     uint64 uiReserveSize = ARENA_DEFAULT_RESERVE_SIZE;
     uint64 uiCommitSize = ARENA_DEFAULT_COMMIT_SIZE;
-    String::HashToken tokName;
+    String::Buffer<128> name;
 };
 
 // ------------------------------------------------------
-struct Arena
+struct alignas( 128 ) Arena
 {
     ArenaAllocParams initParams;
+    uint64 uiBasePos = 0;
     uint64 uiPos = 0;
     uint64 uiCommittedSize = 0;
     uint64 uiReservedSize = 0;
@@ -37,6 +37,7 @@ Arena* ArenaAlloc( ArenaAllocParams const& params );
 void ArenaRelease( Arena* pArena );
 
 uint64 ArenaGetPos( Arena* pArena );
+uint8* ArenaGetBegin( Arena* pArena );
 
 uint8* ArenaPush( Arena* pArena, uint64 uiSize, uint64 uiAlignment );
 
@@ -66,30 +67,6 @@ template <typename T> T* ArenaPushArrayNoZero( Arena* pArena, uint32 uiCount )
 template <typename T> T* ArenaPushArray( Arena* pArena, uint32 uiCount )
 {
     return ArenaPushArrayAligned<T>( pArena, uiCount, MAX( 8, ALIGNOF( T ) ) );
-}
-
-template <typename T> VectorStatic<T> ArenaPushVectorNoZero( Arena* pArena, uint32 uiCapacity )
-{
-    T* pData = ArenaPushArrayNoZero<T>( pArena, uiCapacity );
-    return VectorStatic<T>( pData, uiCapacity );
-}
-
-template <typename T> VectorStatic<T> ArenaPushVector( Arena* pArena, uint32 uiCapacity )
-{
-    T* pData = ArenaPushArray<T>( pArena, uiCapacity );
-    return VectorStatic<T>( pData, uiCapacity );
-}
-
-template <typename T> ElementPool<T> ArenaPushPoolNoZero( Arena* pArena, uint32 uiCapacity )
-{
-    T* pData = ArenaPushArrayNoZero<T>( pArena, uiCapacity );
-    return ElementPool<T>( pData, uiCapacity );
-}
-
-template <typename T> ElementPool<T> ArenaPushPool( Arena* pArena, uint32 uiCapacity )
-{
-    T* pData = ArenaPushArray<T>( pArena, uiCapacity );
-    return ElementPool<T>( pData, uiCapacity );
 }
 
 } // namespace Core

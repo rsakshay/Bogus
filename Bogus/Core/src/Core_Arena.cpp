@@ -28,18 +28,10 @@ Arena* ArenaAlloc( ArenaAllocParams const& params )
     Arena* pArena = (Arena*)pMem;
     pArena->initParams = params;
     pArena->uiPos = ARENA_HEADER_SIZE;
+    pArena->uiBasePos = pArena->uiPos;
     pArena->uiReservedSize = uiReserveSize;
     pArena->uiCommittedSize = uiCommitSize;
-
-    if( params.tokName.m_uiLen )
-    {
-        char* pName = (char*)ArenaPush( pArena, params.tokName.m_uiLen, 1 );
-        memcpy( pName, params.tokName.m_pData, params.tokName.m_uiLen );
-        pArena->initParams.tokName =
-            String::HashToken( pName, params.tokName.m_uiLen, params.tokName.m_uiHash );
-        // NOTE(asr): Force all user allocations to happen beyond 128 byte boundary
-        ArenaPush( pArena, 0, 128 );
-    }
+    ArenaPush( pArena, 0, ALIGNOF( Arena ) );
 
     return pArena;
 }
@@ -56,6 +48,13 @@ void ArenaRelease( Arena* pArena )
 uint64 ArenaGetPos( Arena* pArena )
 {
     return pArena->uiPos;
+}
+
+// ------------------------------------------------------
+// ------------------------------------------------------
+uint8* ArenaGetBegin( Arena* pArena )
+{
+    return (uint8*)pArena + pArena->uiBasePos;
 }
 
 // ------------------------------------------------------
@@ -79,7 +78,7 @@ uint8* ArenaPush( Arena* pArena, uint64 uiSize, uint64 uiAlignment )
     uint8* pMem = 0;
     if( pArena->uiCommittedSize >= uiNewPos )
     {
-        pMem = (uint8*)pArena + uiNewPos;
+        pMem = (uint8*)pArena + uiCurrentPos;
         pArena->uiPos = uiNewPos;
     }
 
