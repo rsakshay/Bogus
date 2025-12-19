@@ -3,8 +3,8 @@
 #include "Core_Arena.h"
 #include "Core_Assert.h"
 #include "Globals.h"
+#include <cstring>
 #include <new.h>
-#include <stdlib.h>
 
 namespace Bogus
 {
@@ -31,6 +31,10 @@ struct VectorPolicyArena
     ELEMTYPE const* pData() const { return (ELEMTYPE*)ArenaGetBegin( m_pArena ); }
     uint32 const size() const { return m_uiSize; }
     uint32 const capacity() const { return m_uiCapacity; }
+    uint32 const size_committed() const
+    {
+        return ( m_pArena->uiCommittedSize - ARENA_HEADER_SIZE ) / sizeof( ELEMTYPE );
+    }
 
     ELEMTYPE* push_new()
     {
@@ -44,16 +48,22 @@ struct VectorPolicyArena
         return pData;
     }
 
-    void pop()
+    void pop_to( uint32 uiIndex )
     {
         if( m_uiSize == 0 )
         {
-            BGASSERT( 0, "Failed to pop element. Vector size is 0." );
+            BGASSERT( 0, "Failed to pop_to. Vector size is 0." );
             return;
         }
 
-        --m_uiSize;
-        ArenaPop( m_pArena, sizeof( ELEMTYPE ) );
+        if( uiIndex >= size() )
+        {
+            BGASSERT( 0, "Failed to pop_to. BadIndex to pop to." );
+            return;
+        }
+
+        ArenaPop( m_pArena, sizeof( ELEMTYPE ) * ( size() - uiIndex ) );
+        m_uiSize = uiIndex;
     }
 
     uint32 m_uiFlags = 0;
@@ -77,6 +87,7 @@ template <typename tElemType> struct VectorPolicyStatic
     ELEMTYPE const* pData() const { return pData(); }
     uint32 const size() const { return m_uiSize; }
     uint32 const capacity() const { return m_uiCapacity; }
+    uint32 const size_committed() const { return capacity(); }
 
     ELEMTYPE* push_new()
     {
@@ -90,7 +101,22 @@ template <typename tElemType> struct VectorPolicyStatic
         return &m_pData[m_uiSize++];
     }
 
-    void pop() { --m_uiSize; }
+    void pop_to( uint32 uiIndex )
+    {
+        if( m_uiSize == 0 )
+        {
+            BGASSERT( 0, "Failed to pop_to. Vector size is 0." );
+            return;
+        }
+
+        if( uiIndex >= size() )
+        {
+            BGASSERT( 0, "Failed to pop_to. BadIndex to pop to." );
+            return;
+        }
+
+        m_uiSize = uiIndex;
+    }
 
     ELEMTYPE* m_pData;
     uint32 m_uiSize = 0;
@@ -104,9 +130,10 @@ template <typename tElemAllocator> struct Vector : tElemAllocator
     using ELEMTYPE = tElemAllocator::ELEMTYPE;
     using tElemAllocator::capacity;
     using tElemAllocator::pData;
-    using tElemAllocator::pop;
+    using tElemAllocator::pop_to;
     using tElemAllocator::push_new;
     using tElemAllocator::size;
+    using tElemAllocator::size_committed;
     enum
     {
         eInvalidIndex = max_uint32,
@@ -121,12 +148,12 @@ template <typename tElemAllocator> struct Vector : tElemAllocator
 
     ELEMTYPE& operator[]( uint32 const uiIndex )
     {
-        assert( uiIndex < size() );
+        BGASSERT( uiIndex < size(), "" );
         return pData()[uiIndex];
     }
     ELEMTYPE const& operator[]( uint32 const uiIndex ) const
     {
-        assert( uiIndex < size() );
+        BGASSERT( uiIndex < size(), "" );
         return pData()[uiIndex];
     }
 
@@ -141,6 +168,8 @@ template <typename tElemAllocator> struct Vector : tElemAllocator
             *pNewElement = in_Element;
         }
     }
+
+    void pop() { pop_to( size() - 1 ); }
 
     uint32 find( ELEMTYPE const& in_data ) const
     {
@@ -179,9 +208,16 @@ template <typename tElemAllocator> struct Vector : tElemAllocator
     }
 };
 
+template <typename tElemType, uint32 uiGrowthSize, uint32 uiDesiredCapacity>
+using HeapVector = Vector<VectorPolicyArena<tElemType, uiGrowthSize, uiDesiredCapacity>>;
+
+template <typename tElemType> using StaticVector = Vector<VectorPolicyStatic<tElemType>>;
+
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
-template <typename tElemType> struct ElementPool
+template <typename tElemType, uint32 uiGrowthSize = 16,
+          uint64 uiDesiredCapacity = ARENA_DEFAULT_RESERVE_SIZE / sizeof( tElemType )>
+struct ElementPool
 {
     using ELEMTYPE = tElemType;
     static constexpr uint32 INVALID = max_uint32;
@@ -196,7 +232,6 @@ template <typename tElemType> struct ElementPool
                    "Element size must be bigger than DeadEntry" );
 
     ElementPool() = default;
-    ElementPool( Arena* pArena ) : m_Vec( { pArena } ) {}
 
     template <typename tFunc> void ForEachElement( tFunc func )
     {
@@ -291,10 +326,129 @@ template <typename tElemType> struct ElementPool
     ELEMTYPE const& operator[]( uint32 const uiHandle ) const { return *Get( uiHandle ); }
     uint32 const count() const { return m_uiCount; }
 
-    Vector<VectorPolicyArena<ELEMTYPE>> m_Vec;
+    HeapVector<ELEMTYPE, uiGrowthSize, uiDesiredCapacity> m_Vec;
     uint32 m_uiNextFree = INVALID;
     uint32 m_uiCount = 0;
 };
+
+// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
+template <typename tElemAllocator> struct Queue : tElemAllocator
+{
+    using ELEMTYPE = tElemAllocator::ELEMTYPE;
+    using tElemAllocator::capacity;
+    using tElemAllocator::size;
+    using tElemAllocator::size_committed;
+    enum
+    {
+        eInvalidIndex = max_uint32,
+    };
+
+  private:
+    using tElemAllocator::pData;
+    using tElemAllocator::pop_to;
+    using tElemAllocator::push_new;
+
+  public:
+    using iterator = ELEMTYPE*;
+    using const_iterator = ELEMTYPE const*;
+    iterator begin() { return pData() + m_uiHead; }
+    iterator end() { return pData() + m_uiHead + size(); }
+    const_iterator begin() const { return pData() + m_uiHead; }
+    const_iterator end() const { return pData() + m_uiHead + size(); }
+
+    ELEMTYPE& Raw( uint32 const uiIndex )
+    {
+        BGASSERT( uiIndex < size(), "" );
+        return pData()[uiIndex];
+    }
+    ELEMTYPE const& Raw( uint32 const uiIndex ) const
+    {
+        BGASSERT( uiIndex < size(), "" );
+        return pData()[uiIndex];
+    }
+
+    ELEMTYPE& operator[]( uint32 uiIndex )
+    {
+        uiIndex += m_uiHead;
+        return Raw( uiIndex );
+    }
+    ELEMTYPE const& operator[]( uint32 uiIndex ) const
+    {
+        uiIndex += m_uiHead;
+        BGASSERT( uiIndex < size(), "" );
+        return Raw( uiIndex );
+    }
+
+    ELEMTYPE const& front() const { return pData()[m_uiHead]; }
+    ELEMTYPE const& back() const { return pData()[size() - 1]; }
+
+    uint32 count() const { return size() - m_uiHead; }
+
+    void push( ELEMTYPE const& in_Element )
+    {
+        ELEMTYPE* pNewElement = push_new();
+        if( pNewElement )
+        {
+            *pNewElement = in_Element;
+        }
+    }
+
+    uint32 find( ELEMTYPE const& in_data ) const
+    {
+        for( uint32 i = m_uiHead; i < size(); ++i )
+        {
+            if( pData[i] == in_data )
+                return i;
+        }
+        return eInvalidIndex;
+    }
+
+    void remove( uint32 uiIndex )
+    {
+        if( uiIndex >= size() || uiIndex < m_uiHead )
+        {
+            BGASSERT( 0, "Index OOB" );
+            return;
+        }
+
+        for( uint32 i = uiIndex; i < size() - 1; ++i )
+        {
+            pData[i] = pData[i + 1];
+        }
+        pop_to( size() - 1 );
+    }
+
+    void pop()
+    {
+        uint32 const uiHalfSize = size_committed() / 2;
+        if( ++m_uiHead == uiHalfSize )
+        {
+            uint32 const uiNumElems = count();
+            memcpy( pData(), pData() + uiHalfSize, sizeof( ELEMTYPE ) * uiNumElems );
+            pop_to( uiNumElems );
+            m_uiHead = 0;
+        }
+    }
+
+    void remove_elem( ELEMTYPE const& kElem )
+    {
+        uint32 const uiIndex = find( kElem );
+        if( uiIndex == eInvalidIndex )
+        {
+            BGASSERT( 0, "Element not found when trying to remove." );
+            return;
+        }
+        remove( uiIndex );
+    }
+
+    uint32 m_uiHead = 0;
+};
+
+template <typename tElemType, uint32 uiGrowthSize, uint32 uiDesiredCapacity>
+using HeapQueue = Queue<VectorPolicyArena<tElemType, uiGrowthSize, uiDesiredCapacity>>;
+
+template <typename tElemType> using StaticQueue = Queue<VectorPolicyStatic<tElemType>>;
 
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
@@ -389,7 +543,7 @@ template <typename tPairVector> struct VectorMap
 
     ELEMTYPE& get_data( uint32 const uiIndex ) const
     {
-        assert( uiIndex < m_Vec.size() );
+        BGASSERT( uiIndex < m_Vec.size(), "" );
         return m_Vec[uiIndex].m_Element;
     }
 

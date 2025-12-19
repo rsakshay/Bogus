@@ -16,7 +16,7 @@ void RunTest_StringBuffer()
 
 void RunTest_VectorStatic( Bogus::Core::Arena* pArena )
 {
-    printf( "\nTesting Static Vector..." );
+    printf( "\n\nTesting Static Vector..." );
     using namespace Bogus::Core;
 
     constexpr uint32 MAX_CAPACITY = 10;
@@ -47,9 +47,52 @@ void RunTest_VectorStatic( Bogus::Core::Arena* pArena )
     myVec.push( 0xDEAD );
 }
 
+void RunTest_QueueStatic( Bogus::Core::Arena* pArena )
+{
+    printf( "\n\nTesting Static Queue..." );
+    using namespace Bogus::Core;
+
+    constexpr uint32 MAX_CAPACITY = 8;
+    uint32* pData = ArenaPushArray<uint32>( pArena, MAX_CAPACITY );
+    Queue<VectorPolicyStatic<uint32>> queue( { pData, MAX_CAPACITY } );
+
+    queue.push( 69 );
+    queue.push( 55 );
+    queue.push( 420 );
+    queue.push( 67 );
+    for( uint32 i = 0; i < 4; ++i )
+    {
+        queue.push( 0xBEEF );
+    }
+
+    uint32 uiCount = queue.count();
+    printf( "\nCount: %d", uiCount );
+    printf( "\nCapacity: %d", queue.capacity() );
+
+    for( uint32 i = 0; i < uiCount; ++i )
+    {
+        uint32 uiItem = queue[i];
+        printf( "\n[%u]: %u", i, uiItem );
+    }
+
+    uint32 const uiElementsToPop = ( uiCount / 2 ) - 1;
+    for( uint32 i = 0; i < uiElementsToPop; ++i )
+    {
+        queue.pop();
+    }
+
+    printf( "\nPopped first %d elements.", uiElementsToPop );
+
+    for( uint32 i = 0; i < queue.count(); ++i )
+    {
+        uint32 uiItem = queue[i];
+        printf( "\n[%u]: %u", i, uiItem );
+    }
+}
+
 void RunTest_VectorArena()
 {
-    printf( "\nTesting Arena Vector..." );
+    printf( "\n\nTesting Arena Vector..." );
     using namespace Bogus::Core;
 
     Vector<VectorPolicyArena<uint32>> myVec;
@@ -75,6 +118,41 @@ void RunTest_VectorArena()
         myVec.push( 0xBEEF );
     }
     myVec.push( 0xDEAD );
+}
+
+void RunTest_QueueArena()
+{
+    printf( "\n\nTesting Arena Queue..." );
+    using namespace Bogus::Core;
+
+    Queue<VectorPolicyArena<uint32>> queue;
+    uint32 const size_committed = queue.size_committed();
+    uint32 const uiElementsToPop = size_committed / 2;
+
+    printf( "\nFilling up to size_committed: %d", size_committed );
+    for( uint32 i = 0; i < uiElementsToPop; ++i )
+    {
+        queue.push( 69 );
+    }
+
+    for( uint32 i = 0; i < uiElementsToPop; ++i )
+    {
+        queue.push( 420 );
+    }
+
+    printf( "\nPopping up to size_committed / 2: %d", uiElementsToPop );
+    for( uint32 i = 0; i < uiElementsToPop; ++i )
+    {
+        queue.pop();
+    }
+
+    printf( "\nPopped first %d elements.", uiElementsToPop );
+
+    for( uint32 i = 0; i < queue.count(); ++i )
+    {
+        uint32 uiItem = queue[i];
+        printf( "\n[%u]: %u", i, uiItem );
+    }
 }
 
 void RunTest_ElementPool()
@@ -165,6 +243,7 @@ void RunTest_Arena()
             pArena->initParams.name.m_pData );
 
     RunTest_VectorStatic( pArena );
+    RunTest_QueueStatic( pArena );
     ArenaRelease( pArena );
 }
 
@@ -195,6 +274,7 @@ int main()
     RunTest_VectorMap();
     RunTest_Arena();
     RunTest_VectorArena();
+    RunTest_QueueArena();
     RunTest_ElementPool();
     getchar();
 }
