@@ -72,16 +72,16 @@ struct VectorPolicyArena
     Arena* m_pArena;
 };
 
-template <typename tElemType> struct VectorPolicyStatic
+template <typename tElemType> struct VectorPolicyPreAllocated
 {
     using ELEMTYPE = tElemType;
 
-    VectorPolicyStatic( ELEMTYPE* pData, uint32 uiCapacity )
+    VectorPolicyPreAllocated( ELEMTYPE* pData, uint32 uiCapacity )
         : m_pData( pData ), m_uiCapacity( uiCapacity )
     {
     }
 
-    ~VectorPolicyStatic() {}
+    ~VectorPolicyPreAllocated() {}
 
     ELEMTYPE* pData() { return m_pData; }
     ELEMTYPE const* pData() const { return pData(); }
@@ -93,7 +93,7 @@ template <typename tElemType> struct VectorPolicyStatic
     {
         if( m_uiSize == capacity() )
         {
-            BGASSERT( 0, "Failed to add new element. Static Allocation ran out of memory." );
+            BGASSERT( 0, "Failed to add new element. Ran out of memory." );
             return nullptr;
         }
 
@@ -121,6 +121,52 @@ template <typename tElemType> struct VectorPolicyStatic
     ELEMTYPE* m_pData;
     uint32 m_uiSize = 0;
     uint32 m_uiCapacity = 0;
+};
+
+template <typename tElemType, uint32 uiCapacity> struct VectorPolicyStatic
+{
+    using ELEMTYPE = tElemType;
+
+    VectorPolicyStatic() = default;
+    ~VectorPolicyStatic() = default;
+
+    ELEMTYPE* pData() { return m_Data; }
+    ELEMTYPE const* pData() const { return m_Data; }
+    uint32 const size() const { return m_uiSize; }
+    uint32 const capacity() const { return uiCapacity; }
+    uint32 const size_committed() const { return capacity(); }
+
+    ELEMTYPE* push_new()
+    {
+        if( m_uiSize == capacity() )
+        {
+            BGASSERT( 0, "Failed to add new element. Static Allocation ran out of memory." );
+            return nullptr;
+        }
+
+        new( &m_Data[m_uiSize] ) ELEMTYPE();
+        return &m_Data[m_uiSize++];
+    }
+
+    void pop_to( uint32 uiIndex )
+    {
+        if( m_uiSize == 0 )
+        {
+            BGASSERT( 0, "Failed to pop_to. Vector size is 0." );
+            return;
+        }
+
+        if( uiIndex >= size() )
+        {
+            BGASSERT( 0, "Failed to pop_to. BadIndex to pop to." );
+            return;
+        }
+
+        m_uiSize = uiIndex;
+    }
+
+    ELEMTYPE m_Data[uiCapacity];
+    uint32 m_uiSize = 0;
 };
 
 // -----------------------------------------------------------------------
@@ -208,10 +254,14 @@ template <typename tElemAllocator> struct Vector : tElemAllocator
     }
 };
 
-template <typename tElemType, uint32 uiGrowthSize, uint32 uiDesiredCapacity>
+template <typename tElemType, uint32 uiGrowthSize = 16,
+          uint64 uiDesiredCapacity = ARENA_DEFAULT_RESERVE_SIZE / sizeof( tElemType )>
 using HeapVector = Vector<VectorPolicyArena<tElemType, uiGrowthSize, uiDesiredCapacity>>;
 
-template <typename tElemType> using StaticVector = Vector<VectorPolicyStatic<tElemType>>;
+template <typename tElemType> using ArenaVector = Vector<VectorPolicyPreAllocated<tElemType>>;
+
+template <typename tElemType, uint32 uiCapacity>
+using StaticVector = Vector<VectorPolicyStatic<tElemType, uiCapacity>>;
 
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------
@@ -445,10 +495,14 @@ template <typename tElemAllocator> struct Queue : tElemAllocator
     uint32 m_uiHead = 0;
 };
 
-template <typename tElemType, uint32 uiGrowthSize, uint32 uiDesiredCapacity>
+template <typename tElemType, uint32 uiGrowthSize = 16,
+          uint64 uiDesiredCapacity = ARENA_DEFAULT_RESERVE_SIZE / sizeof( tElemType )>
 using HeapQueue = Queue<VectorPolicyArena<tElemType, uiGrowthSize, uiDesiredCapacity>>;
 
-template <typename tElemType> using StaticQueue = Queue<VectorPolicyStatic<tElemType>>;
+template <typename tElemType> using ArenaQueue = Queue<VectorPolicyPreAllocated<tElemType>>;
+
+template <typename tElemType, uint32 uiCapacity>
+using StaticQueue = Queue<VectorPolicyStatic<tElemType, uiCapacity>>;
 
 // -----------------------------------------------------------------------
 // -----------------------------------------------------------------------

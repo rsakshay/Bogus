@@ -14,14 +14,45 @@ void RunTest_StringBuffer()
     printf( "%s\n\n", buffer.c_str() );
 }
 
-void RunTest_VectorStatic( Bogus::Core::Arena* pArena )
+void RunTest_VectorStatic()
 {
     printf( "\n\nTesting Static Vector..." );
     using namespace Bogus::Core;
 
+    StaticVector<uint32, 10> myVec;
+
+    myVec.push( 69 );
+    myVec.push( 55 );
+    myVec.push( 420 );
+    myVec.push( 67 );
+
+    uint32 uiCount = myVec.size();
+    printf( "\nSize: %d", uiCount );
+    printf( "\nCapacity: %d", myVec.capacity() );
+
+    for( uint32 i = 0; i < uiCount; ++i )
+    {
+        uint32 uiItem = myVec[i];
+        printf( "\n[%u]: %u", i, uiItem );
+    }
+
+    printf( "\nRunning fill test..." );
+    for( uint32 i = uiCount; i < myVec.capacity(); ++i )
+    {
+        myVec.push( 0xBEEF );
+        printf( "\n[%u]: %x", i, myVec[i] );
+    }
+    myVec.push( 0xDEAD );
+}
+
+void RunTest_VectorArena( Bogus::Core::Arena* pArena )
+{
+    printf( "\n\nTesting Arena Vector..." );
+    using namespace Bogus::Core;
+
     constexpr uint32 MAX_CAPACITY = 10;
     uint32* pData = ArenaPushArray<uint32>( pArena, MAX_CAPACITY );
-    Vector<VectorPolicyStatic<uint32>> myVec( { pData, MAX_CAPACITY } );
+    ArenaVector<uint32> myVec( { pData, MAX_CAPACITY } );
 
     myVec.push( 69 );
     myVec.push( 55 );
@@ -47,14 +78,14 @@ void RunTest_VectorStatic( Bogus::Core::Arena* pArena )
     myVec.push( 0xDEAD );
 }
 
-void RunTest_QueueStatic( Bogus::Core::Arena* pArena )
+void RunTest_QueueArena( Bogus::Core::Arena* pArena )
 {
-    printf( "\n\nTesting Static Queue..." );
+    printf( "\n\nTesting Arena Queue..." );
     using namespace Bogus::Core;
 
     constexpr uint32 MAX_CAPACITY = 8;
     uint32* pData = ArenaPushArray<uint32>( pArena, MAX_CAPACITY );
-    Queue<VectorPolicyStatic<uint32>> queue( { pData, MAX_CAPACITY } );
+    ArenaQueue<uint32> queue( { pData, MAX_CAPACITY } );
 
     queue.push( 69 );
     queue.push( 55 );
@@ -90,12 +121,12 @@ void RunTest_QueueStatic( Bogus::Core::Arena* pArena )
     }
 }
 
-void RunTest_VectorArena()
+void RunTest_VectorHeap()
 {
-    printf( "\n\nTesting Arena Vector..." );
+    printf( "\n\nTesting Heap Vector..." );
     using namespace Bogus::Core;
 
-    Vector<VectorPolicyArena<uint32>> myVec;
+    HeapVector<uint32> myVec;
 
     myVec.push( 69 );
     myVec.push( 55 );
@@ -120,12 +151,12 @@ void RunTest_VectorArena()
     myVec.push( 0xDEAD );
 }
 
-void RunTest_QueueArena()
+void RunTest_QueueHeap()
 {
-    printf( "\n\nTesting Arena Queue..." );
+    printf( "\n\nTesting Heap Queue..." );
     using namespace Bogus::Core;
 
-    Queue<VectorPolicyArena<uint32>> queue;
+    HeapQueue<uint32> queue;
     uint32 const size_committed = queue.size_committed();
     uint32 const uiElementsToPop = size_committed / 2;
 
@@ -242,8 +273,8 @@ void RunTest_Arena()
     printf( "\n\nArena Created with name: %.*s\n", pArena->initParams.name.m_uiLen,
             pArena->initParams.name.m_pData );
 
-    RunTest_VectorStatic( pArena );
-    RunTest_QueueStatic( pArena );
+    RunTest_VectorArena( pArena );
+    RunTest_QueueArena( pArena );
     ArenaRelease( pArena );
 }
 
@@ -272,9 +303,10 @@ int main()
 {
     RunTest_StringBuffer();
     RunTest_VectorMap();
+    RunTest_VectorStatic();
     RunTest_Arena();
-    RunTest_VectorArena();
-    RunTest_QueueArena();
+    RunTest_VectorHeap();
+    RunTest_QueueHeap();
     RunTest_ElementPool();
     getchar();
 }
