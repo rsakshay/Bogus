@@ -430,6 +430,8 @@ template <typename tElemAllocator> struct Queue : tElemAllocator
         return Raw( uiIndex );
     }
 
+    ELEMTYPE& front() { return pData()[m_uiHead]; }
+    ELEMTYPE& back() { return pData()[size() - 1]; }
     ELEMTYPE const& front() const { return pData()[m_uiHead]; }
     ELEMTYPE const& back() const { return pData()[size() - 1]; }
 

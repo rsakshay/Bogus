@@ -6,14 +6,14 @@ project( "${m_TargetName}" LANGUAGES CXX )
 #TODO(asr): Check to see if we are building for windows
 set( HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/inc/Renderer.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/inc/dx12/RendererDX12_CommandList.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/inc/dx12/RendererDX12_CommandQueue.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/inc/dx12/RendererDX12_Utils.h"
 )
 
 #TODO(asr): Check to see if we are building for windows
 set( SRC_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/src/dx12/RendererDX12.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/dx12/RendererDX12_CommandList.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/dx12/RendererDX12_CommandQueue.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/dx12/RendererDX12_Utils.cpp"
 )
 
